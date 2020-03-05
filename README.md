@@ -13,10 +13,15 @@
 #### 软件架构
 软件架构说明
 后台：springboot，mybatis, hibernate, spring data jpa，shiro, aop
+
 前台：Ajax, echart, layui, vue, jquery
+
 数据推送：websocket
+
 数据库：mysql
+
 开发工具：idea
+
 #### 安装教程
 
 1.  xxxx
