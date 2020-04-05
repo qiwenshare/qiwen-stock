@@ -18,7 +18,7 @@
 软件架构说明
 后台：springboot，mybatis, hibernate, spring data jpa，shiro, aop
 
-前台：Ajax, echart, layui, vue, jquery
+前台：Ajax, echart, element-ui, vue, jquery
 
 数据推送：websocket
 
@@ -26,24 +26,48 @@
 
 开发工具：idea
 
-#### 安装教程
+## 安装教程
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+1. 拉取代码
+2. 本地创建数据库，名为stock，将application.properties中连接数据库的密码替换为自己本地的
+3. 点击根目录下install.bat进行编译
+4. 编译完成之后会生成release发布包，进去点击startStock.bat启动
 
-#### 使用说明
+## 部分功能展示
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0405/155558_c0cec849_947714.png "屏幕截图.png")
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+因为目前还在开发，所以暂时就将这些管理端操作放到这里吧，这里主要是爬取上海证券交易所的数据，主要原因是他们的网站比较稳定
 
-#### 参与贡献
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0405/155812_f6d10a18_947714.png "屏幕截图.png")
 
-1.  Fork 本仓库
-2.  新建 Feat_xxx 分支
-3.  提交代码
-4.  新建 Pull Request
+下面分别是分时线，日线，周线，还有月线，通过echarts工具进行渲染的
+
+分时线
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0405/160017_3803163a_947714.png "屏幕截图.png")
+
+日线
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0405/160323_3f930c65_947714.png "屏幕截图.png")
+
+周线
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0405/160419_cfcd225f_947714.png "屏幕截图.png")
+
+月线
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0405/160626_c9459226_947714.png "屏幕截图.png")
+
+还有最最重要的，数据回测和数据预测功能，主要是根据算法来分析和预测
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0405/160856_af237bf6_947714.png "屏幕截图.png")
+
+
+## 联系我
+如果对该项目感兴趣，或者有各种问题可扫描加入QQ群
+
+![输入图片说明](https://images.gitee.com/uploads/images/2020/0404/230620_c45ef962_947714.png "屏幕截图.png")
+
 
 
 #### 码云特技
