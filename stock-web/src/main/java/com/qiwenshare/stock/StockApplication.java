@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-@MapperScan("com.mac.stock.mapper")
+@MapperScan("com.qiwenshare.stock.mapper")
 @EnableScheduling  //启用定时任务
 public class StockApplication {
 
