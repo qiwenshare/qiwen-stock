@@ -23,11 +23,11 @@
     </properties>
 
     <dependencies>
-        <!-- fastjson  -->
-        <dependency>
-            <groupId>com.alibaba</groupId>
-            <artifactId>fastjson</artifactId>
-        </dependency>
+<!--        &lt;!&ndash; fastjson  &ndash;&gt;-->
+<!--        <dependency>-->
+<!--            <groupId>com.alibaba</groupId>-->
+<!--            <artifactId>fastjson</artifactId>-->
+<!--        </dependency>-->
 
 
         <!--引入aop-->
@@ -76,23 +76,6 @@
                 <artifactId>hibernate-core</artifactId>
                 <version>5.4.1.Final</version>
             </dependency>
-
-            <!--阿里云短信验证服务-->
-            <dependency>
-                <groupId>com.aliyun</groupId>
-                <artifactId>aliyun-java-sdk-core</artifactId>
-                <version>4.0.3</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.shiro</groupId>
-                <artifactId>shiro-spring</artifactId>
-                <version>1.4.0</version>
-            </dependency>
-<!--            <dependency>-->
-<!--                <groupId>com.qiwenshare</groupId>-->
-<!--                <artifactId>qiwenshare-common</artifactId>-->
-<!--                <version>1.0.0</version>-->
-<!--            </dependency>-->
 
         </dependencies>
     </dependencyManagement>
