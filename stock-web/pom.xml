@@ -14,7 +14,7 @@
     <description>Demo project for Spring Boot</description>
 
     <properties>
-        <java.version>13</java.version>
+        <java.version>1.8</java.version>
         <skipTests>true</skipTests>
         <release-path>target/../../release</release-path>
         <app-name>${project.artifactId}-${project.version}</app-name>
@@ -108,6 +108,8 @@
                             <target>
                                 <copy file="target/${app-name}.jar"
                                       tofile="${release-path}/app/${project.artifactId}/${app-name}.jar"/>
+                                <copy file="target/classes/script/startStock.bat"
+                                      tofile="${release-path}/startStock.bat"/>
                             </target>
                         </configuration>
                     </execution>
