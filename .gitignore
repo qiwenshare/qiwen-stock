@@ -24,3 +24,5 @@ hs_err_pid*
 /.idea
 /stock-web/target
 /stock-common/target
+*.iml
+/release
