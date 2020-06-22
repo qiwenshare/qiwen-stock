@@ -106,10 +106,10 @@
                         </goals>
                         <configuration>
                             <target>
-                                <copy file="target/${app-name}.jar"
-                                      tofile="${release-path}/app/${project.artifactId}/${app-name}.jar"/>
-                                <copy file="target/classes/script/startStock.bat"
-                                      tofile="${release-path}/startStock.bat"/>
+                                <copy file="target/${app-name}.jar" tofile="${release-path}/app/${project.artifactId}/${app-name}.jar"/>
+                                <copy file="target/classes/script/startup.bat" tofile="${release-path}/startup.bat"/>
+								<copy file="target/classes/script/startup.sh" tofile="${release-path}/startup.sh"/>
+								<copy file="target/classes/script/stop.sh" tofile="${release-path}/stop.sh"/>
                             </target>
                         </configuration>
                     </execution>
