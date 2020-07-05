@@ -4,7 +4,7 @@ import com.qiwenshare.common.domain.TaskProcess;
 import com.qiwenshare.stock.analysis.ReplayOperation;
 import com.qiwenshare.stock.api.IStockDIService;
 import com.qiwenshare.stock.api.IStockDayInfoService;
-import com.qiwenshare.stock.controller.StockDIController;
+import com.qiwenshare.stock.controller.StockController;
 import com.qiwenshare.stock.domain.ReplayBean;
 import com.qiwenshare.stock.domain.StockBean;
 import com.qiwenshare.stock.domain.StockDayInfo;
@@ -29,7 +29,7 @@ public class ReplayRunnable implements Runnable {
 
     @Override
     public void run() {
-        if (!StockDIController.stockReplayexec.isShutdown()) {
+        if (!StockController.stockReplayexec.isShutdown()) {
             TaskProcess taskProcess = new TaskProcess();
 
             List<StockDayInfo> stockDayInfoList = stockDayInfoService.getStockdaybar(stockBean.getStocknum());
@@ -37,7 +37,7 @@ public class ReplayRunnable implements Runnable {
             stockDIService.deleteReplay(stockBean.getStockid());
             List<ReplayBean> replayList = new ReplayOperation().getReplayInfo(stockDayInfoList, stockBean);
             stockDIService.insertReplay(replayList);
-            synchronized (StockDIController.class) {
+            synchronized (StockController.class) {
                 updateCount++;
             }
 

@@ -3,7 +3,7 @@ package com.qiwenshare.stock.executor;
 import com.qiwenshare.common.domain.TaskProcess;
 import com.qiwenshare.stock.api.IStockDIService;
 import com.qiwenshare.stock.api.IStockTimeInfoService;
-import com.qiwenshare.stock.controller.StockDIController;
+import com.qiwenshare.stock.controller.StockController;
 import com.qiwenshare.stock.domain.AbnormalactionBean;
 import com.qiwenshare.stock.domain.StockBean;
 import com.qiwenshare.stock.domain.StockBidBean;
@@ -33,12 +33,12 @@ public class StockTimeInfoRunnable implements Runnable {
             List<StockTimeInfo> stockTimeInfoList = stockTimeInfoService.getStockTimeInfoListByStockBean(stockBean);
             StockBidBean stockBidBean = stockDIService.getBidByStockBean(stockBean);
             if (stockTimeInfoList == null) {
-                synchronized (StockDIController.class) {
+                synchronized (StockController.class) {
                     updateCount++;
                 }
                 return;
             }
-            synchronized (StockDIController.class) {
+            synchronized (StockController.class) {
                 updateCount++;
             }
             stockTimeInfoService.insertStockTimeInfo("stocktimeinfo_" + stockBean.getStocknum(), stockTimeInfoList);

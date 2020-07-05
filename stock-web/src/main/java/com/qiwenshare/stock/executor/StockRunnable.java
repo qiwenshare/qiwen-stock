@@ -2,7 +2,7 @@ package com.qiwenshare.stock.executor;
 
 import com.qiwenshare.common.domain.TaskProcess;
 import com.qiwenshare.stock.api.IStockDIService;
-import com.qiwenshare.stock.controller.StockDIController;
+import com.qiwenshare.stock.controller.StockController;
 import com.qiwenshare.stock.domain.StockBean;
 import com.qiwenshare.stock.websocket.StockWebsocket;
 import org.slf4j.Logger;
@@ -29,7 +29,7 @@ public class StockRunnable implements Runnable {
         if (!StockService.stockExecutor.isShutdown()) {
             TaskProcess taskProcess = new TaskProcess();
 
-            synchronized (StockDIController.class) {
+            synchronized (StockController.class) {
                 updateCount++;
             }
             stockDIService.createStockInfoTable(stockBean.getStocknum());

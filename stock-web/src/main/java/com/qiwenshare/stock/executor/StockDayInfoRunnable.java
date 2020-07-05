@@ -5,7 +5,7 @@ import com.qiwenshare.common.cbb.DateUtil;
 import com.qiwenshare.common.domain.TaskProcess;
 import com.qiwenshare.stock.api.IStockDIService;
 import com.qiwenshare.stock.api.IStockDayInfoService;
-import com.qiwenshare.stock.controller.StockDIController;
+import com.qiwenshare.stock.controller.StockController;
 import com.qiwenshare.stock.domain.EchnicalaspectBean;
 import com.qiwenshare.stock.domain.StockBean;
 import com.qiwenshare.stock.domain.StockDayInfo;
@@ -54,12 +54,12 @@ public class StockDayInfoRunnable implements Runnable {
 
             stockDayInfoList = new IndicatorProxy().getDayIndicatorList(stockDayInfoList);
             if (stockDayInfoList == null) {
-                synchronized (StockDIController.class) {
+                synchronized (StockController.class) {
                     updateCount++;
                 }
                 return;
             }
-            synchronized (StockDIController.class) {
+            synchronized (StockController.class) {
                 updateCount++;
             }
             try {

@@ -2,6 +2,7 @@ package com.qiwenshare.stock.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.qiwenshare.common.cbb.HttpRequest;
 import com.qiwenshare.common.cbb.RestResult;
 import com.qiwenshare.common.domain.TableData;
 import com.qiwenshare.common.domain.TableQueryBean;
@@ -11,6 +12,8 @@ import com.qiwenshare.stock.domain.*;
 import com.qiwenshare.stock.executor.ReplayRunnable;
 import com.qiwenshare.stock.executor.StockService;
 import com.qiwenshare.stock.websocket.StockWebsocket;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -26,15 +29,17 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+@Tag(name = "股票")
+@RequestMapping("/stock")
 @RestController
-public class StockDIController {
+public class StockController {
 
     /**
      * 当前模块
      */
     public static final String CURRENT_MODULE = "DI";
     private static final int NTHREADS = 5;
-    private static final Logger logger = LoggerFactory.getLogger(StockDIController.class);
+    private static final Logger logger = LoggerFactory.getLogger(StockController.class);
     public static ExecutorService stockReplayexec = Executors.newFixedThreadPool(NTHREADS);
     @Resource
     IStockDIService stockDIService;
@@ -52,7 +57,8 @@ public class StockDIController {
      *
      * @return
      */
-    @RequestMapping("/getStockdaybar")
+    @Operation(summary = "日线")
+    @RequestMapping("/getstockdaybar")
     @ResponseBody
     public String getStockdaybar(String stockNum) {
         List<StockDayInfo> stockdayList = stockDayInfoService.getStockdaybar(stockNum);
@@ -65,7 +71,8 @@ public class StockDIController {
      *
      * @return
      */
-    @RequestMapping("/getStockBid")
+    @Operation(summary = "得到交易信息")
+    @RequestMapping("/getstockbid")
     @ResponseBody
     public String getStockBid(String stockNum) {
         StockBidBean stockBidBean = stockDIService.getStockBidBean(stockNum);
@@ -77,7 +84,8 @@ public class StockDIController {
      *
      * @return
      */
-    @RequestMapping("/getStocktimebar")
+    @Operation(summary = "分时线")
+    @RequestMapping("/getstocktimebar")
     @ResponseBody
     public String getStocktimebar(String stockNum) {
         List<StockTimeInfo> stocktimeList = stockTimeInfoService.getStocktimebar(stockNum);
@@ -90,7 +98,8 @@ public class StockDIController {
      *
      * @return
      */
-    @RequestMapping("/getStockweekbar")
+    @Operation(summary = "周线")
+    @RequestMapping("/getstockweekbar")
     @ResponseBody
     public String getStockweekbar(String stockNum) {
         List<StockWeekInfo> stockweekList = stockWeekInfoService.getStockweekbar(stockNum);
@@ -103,7 +112,8 @@ public class StockDIController {
      *
      * @return
      */
-    @RequestMapping("/getStockmonthbar")
+    @Operation(summary = "月线")
+    @RequestMapping("/getstockmonthbar")
     @ResponseBody
     public String getStockmonthbar(String stockNum) {
         List<StockMonthInfo> stockmonthList = stockMonthInfoService.getStockmonthbar(stockNum);
@@ -132,7 +142,8 @@ public class StockDIController {
      * @param stockid
      * @return
      */
-    @RequestMapping("/selectReplayList")
+    @Operation(summary = "查询回测数据")
+    @RequestMapping("/selectreplaylist")
     @ResponseBody
     public String selectReplayList(int stockid) {
         TableData<List<ReplayBean>> miniuiTableData = new TableData<List<ReplayBean>>();
@@ -150,7 +161,8 @@ public class StockDIController {
      *
      * @return
      */
-    @RequestMapping("/selectAllReplayList")
+    @Operation(summary = "查询所有回测数据")
+    @RequestMapping("/selectallreplaylist")
     @ResponseBody
     public String selectAllReplayList(@RequestBody TableQueryBean tableQueryBean) {
         TableData<List<ReplayBean>> miniuiTableData = new TableData<List<ReplayBean>>();
@@ -168,7 +180,8 @@ public class StockDIController {
      *
      * @return
      */
-    @RequestMapping("/backTest")
+    @Operation(summary = "数据回测")
+    @RequestMapping("/backtest")
     @ResponseBody
     public String backTest(StockBean stockBean) {
         RestResult<String> restResult = new RestResult<String>();
@@ -182,11 +195,12 @@ public class StockDIController {
     }
 
     /**
-     * 所有数据回测
+     * 数据回测
      *
      * @return
      */
-    @RequestMapping("/totalStockBackTest")
+    @Operation(summary = "所有股票数据回测")
+    @RequestMapping("/totalstockbacktest")
     @ResponseBody
     public String totalStockBackTest() {
         RestResult<String> restResult = new RestResult<String>();
@@ -210,7 +224,8 @@ public class StockDIController {
      *
      * @return
      */
-    @RequestMapping("/checkStockIsUpdate")
+    @Operation(summary = "检测上证股票数据是否有需要更新")
+    @RequestMapping("/checkstockisupdate")
     @ResponseBody
     public String checkStockIsUpdate() {
         RestResult<String> restResult = new RestResult<String>();
@@ -252,7 +267,8 @@ public class StockDIController {
      * @param request
      * @return
      */
-    @RequestMapping("/updateStockList")
+    @Operation(summary = "更新股票列表")
+    @RequestMapping("/updatestocklist")
     @ResponseBody
     public String updateStockList(HttpServletRequest request) {
         RestResult<String> restResult = new RestResult<String>();
@@ -280,7 +296,8 @@ public class StockDIController {
      *
      * @return
      */
-    @RequestMapping("/getStockList")
+    @Operation(summary = "获取股票列表")
+    @RequestMapping("/getstocklist")
     @ResponseBody
     public String getStockList(@RequestBody TableQueryBean tableQueryBean) {
         TableData<List<StockBean>> miniuiTableData = new TableData<List<StockBean>>();
@@ -298,7 +315,8 @@ public class StockDIController {
      *
      * @return
      */
-    @RequestMapping("/getEchnicalaspect")
+    @Operation(summary = "获取技术面结果")
+    @RequestMapping("/getechnicalaspect")
     @ResponseBody
     public String getEchnicalaspect(int stockid) {
         EchnicalaspectBean echnicalaspectBean = stockDIService.getEchnicalaspectBean(stockid);
@@ -311,7 +329,8 @@ public class StockDIController {
      *
      * @return
      */
-    @RequestMapping("/getAbnormalaction")
+    @Operation(summary = "获取异动")
+    @RequestMapping("/getabnormalaction")
     @ResponseBody
     public String getAbnormalaction(int stockid) {
         AbnormalactionBean abnormalactionBean = stockDIService.getAbnormalactionBean(stockid);
@@ -324,7 +343,8 @@ public class StockDIController {
      *
      * @return
      */
-    @RequestMapping("/getStockInfoById")
+    @Operation(summary = "获取股票信息通过Id")
+    @RequestMapping("/getstockinfobyid")
     @ResponseBody
     public String getStockInfoById(String stockId) {
         return JSON.toJSONString(stockDIService.getStockInfoById(stockId));
@@ -336,7 +356,8 @@ public class StockDIController {
      *
      * @return
      */
-    @RequestMapping("/updateStockTimeInfo")
+    @Operation(summary = "更新分时数据")
+    @RequestMapping("/updatestocktimeinfo")
     @ResponseBody
     public String updateStockTimeInfo() {
         RestResult<String> restResult = new RestResult<String>();
@@ -354,7 +375,8 @@ public class StockDIController {
      *
      * @return
      */
-    @RequestMapping("/updateStockDayInfo")
+    @Operation(summary = "更新日线数据")
+    @RequestMapping("/updatestockdayinfo")
     @ResponseBody
     public String updateStockDayInfo() {
         RestResult<String> restResult = new RestResult<String>();
@@ -374,7 +396,8 @@ public class StockDIController {
      *
      * @return
      */
-    @RequestMapping("/updateStockWeekInfo")
+    @Operation(summary = "更新周线数据")
+    @RequestMapping("/updatestockweekinfo")
     @ResponseBody
     public String updateStockWeekInfo() {
         RestResult<String> restResult = new RestResult<String>();
@@ -391,7 +414,8 @@ public class StockDIController {
      *
      * @return
      */
-    @RequestMapping("/updateStockMonthInfo")
+    @Operation(summary = "更新月线数据")
+    @RequestMapping("/updatestockmonthinfo")
     @ResponseBody
     public String updateStockMonthInfo() {
         RestResult<String> restResult = new RestResult<String>();
@@ -408,7 +432,8 @@ public class StockDIController {
      *
      * @return
      */
-    @RequestMapping("/stopUpdateStockData")
+    @Operation(summary = "停止更新股票信息")
+    @RequestMapping("/stopupdatestockdata")
     @ResponseBody
     public String stopUpdateStockData() {
         RestResult<String> restResult = new RestResult<String>();
@@ -438,7 +463,8 @@ public class StockDIController {
      *
      * @return
      */
-    @RequestMapping("/stopUpdateStockTimeData")
+    @Operation(summary = "停止更新股票分时信息")
+    @RequestMapping("/stopupdatestocktimedata")
     @ResponseBody
     public String stopUpdateStockTimeData() {
         RestResult<String> restResult = new RestResult<String>();
@@ -467,7 +493,8 @@ public class StockDIController {
      *
      * @return 返回结果
      */
-    @RequestMapping("/queryStockByFilter")
+    @Operation(summary = "通过过滤条件查询股票信息")
+    @RequestMapping("/querystockbyfilter")
     @ResponseBody
     public String queryStockByFilter(String filter) {
         RestResult<List<StockBean>> restResult = new RestResult<List<StockBean>>();
@@ -476,6 +503,19 @@ public class StockDIController {
         restResult.setData(stockBean);
         restResult.setSuccess(true);
         return JSON.toJSONString(restResult);
+    }
+
+    /**
+     * 检测上证股票实时数据
+     *
+     * @return
+     */
+    @Operation(summary = "检测上证股票实时数据")
+    @RequestMapping("/getshstock")
+    @ResponseBody
+    public String getShStock(){
+        String result = HttpRequest.sendGet("http://yunhq.sse.com.cn:32041//v1/sh1/list/self/000001_000016_000010_000009_000300","select=code%2Cname%2Clast%2Cchg_rate%2Camount%2Copen%2Cprev_close&_=1585456053043");
+        return result;
     }
 
 }

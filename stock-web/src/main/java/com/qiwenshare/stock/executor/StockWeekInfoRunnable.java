@@ -3,7 +3,7 @@ package com.qiwenshare.stock.executor;
 import com.qiwenshare.common.domain.TaskProcess;
 import com.qiwenshare.stock.api.IStockDayInfoService;
 import com.qiwenshare.stock.api.IStockWeekInfoService;
-import com.qiwenshare.stock.controller.StockDIController;
+import com.qiwenshare.stock.controller.StockController;
 import com.qiwenshare.stock.domain.StockBean;
 import com.qiwenshare.stock.domain.StockDayInfo;
 import com.qiwenshare.stock.domain.StockWeekInfo;
@@ -34,12 +34,12 @@ public class StockWeekInfoRunnable implements Runnable {
             List<StockWeekInfo> stockWeekInfoList = stockWeekInfoService.getStockWeekInfoList(stockDayInfoList);
 
             if (stockWeekInfoList == null) {
-                synchronized (StockDIController.class) {
+                synchronized (StockController.class) {
                     updateCount++;
                 }
                 return;
             }
-            synchronized (StockDIController.class) {
+            synchronized (StockController.class) {
                 updateCount++;
             }
 

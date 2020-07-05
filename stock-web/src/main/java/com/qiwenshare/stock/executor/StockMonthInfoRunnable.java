@@ -3,7 +3,7 @@ package com.qiwenshare.stock.executor;
 import com.qiwenshare.common.domain.TaskProcess;
 import com.qiwenshare.stock.api.IStockDayInfoService;
 import com.qiwenshare.stock.api.IStockMonthInfoService;
-import com.qiwenshare.stock.controller.StockDIController;
+import com.qiwenshare.stock.controller.StockController;
 import com.qiwenshare.stock.domain.StockBean;
 import com.qiwenshare.stock.domain.StockDayInfo;
 import com.qiwenshare.stock.domain.StockMonthInfo;
@@ -35,12 +35,12 @@ public class StockMonthInfoRunnable implements Runnable {
             List<StockMonthInfo> stockMonthInfoList = stockMonthInfoService.getStockMonthInfoList(stockDayInfoList);
 
             if (stockMonthInfoList == null) {
-                synchronized (StockDIController.class) {
+                synchronized (StockController.class) {
                     updateCount++;
                 }
                 return;
             }
-            synchronized (StockDIController.class) {
+            synchronized (StockController.class) {
                 updateCount++;
             }
 

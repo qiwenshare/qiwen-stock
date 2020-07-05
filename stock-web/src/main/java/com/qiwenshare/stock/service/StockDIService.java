@@ -212,33 +212,50 @@ public class StockDIService implements IStockDIService {
     public List<StockBean> getStockListByScript() {
         String url = "http://query.sse.com.cn/security/stock/getStockListData2.do";
         //String param = "isPagination=true&stockCode=&csrcCode=&areaName=&stockType=" + stockType + "&pageHelp.cacheSize=1&pageHelp.beginPage=1&pageHelp.pageSize=3000&pageHelp.pageNo=1&_=1553181823571";
-        Map<String, String> param = new HashMap<String, String>();
-        param.put("isPagination", "true");
-        param.put("stockType", "1");
-        param.put("pageHelp.cacheSize", "1");
-        param.put("pageHelp.beginPage", "1");
-        param.put("pageHelp.pageSize", "3000");
-        param.put("pageHelp.pageNo", "1");
-        String sendResult = new com.qiwenshare.common.cbb.ProxyHttpRequest().sendGet(url, param);
-        JSONObject pageHelp = JSONObject.parseObject(sendResult).getJSONObject("pageHelp");
-        List<StockBean> jsonArr = JSON.parseArray(pageHelp.getString("data"), StockBean.class);
-
         List<StockBean> stockBeanList = new ArrayList<StockBean>();
+        for (int i = 1 ; i < 5; i++) {
+            Map<String, String> param = new HashMap<String, String>();
+            param.put("isPagination", "true");
+            param.put("stockType", "1");
+            param.put("pageHelp.cacheSize", "1");
+            param.put("pageHelp.beginPage", i + "");
+            param.put("pageHelp.pageSize", "1000");
+            param.put("pageHelp.pageNo", i + "");
+            param.put("pageHelp.endPage", i + "1");
+            String sendResult = new com.qiwenshare.common.cbb.ProxyHttpRequest().sendGet(url, param);
+            int retryCount = 0;
+            while (sendResult.indexOf("Welcome To Zscaler Directory Authentication Sign In") != -1 && retryCount < 50) {
+                sendResult = new com.qiwenshare.common.cbb.ProxyHttpRequest().sendGet(url, param);
+                retryCount++;
+            }
+            JSONObject pageHelp = JSONObject.parseObject(sendResult).getJSONObject("pageHelp");
+            List<StockBean> jsonArr = JSON.parseArray(pageHelp.getString("data"), StockBean.class);
 
-        for (int i = 0; i < jsonArr.size(); i++) {
-            StockBean stockStr = jsonArr.get(i);
-            stockStr.setStocknum(stockStr.getCOMPANY_CODE());
-            stockStr.setStockname(stockStr.getCOMPANY_ABBR());
-            try {
-                JSONObject stockShare = getStockShare(stockStr.getCOMPANY_CODE());
-                stockStr.setTotalFlowShares(stockShare.getDoubleValue("DOMESTIC_SHARES") * 10000);
-                stockStr.setTotalShares(stockShare.getDoubleValue("UNLIMITED_SHARES") * 10000);
-            } catch (Exception e) {
-                logger.error("getStockShare fail:stocknum{}, errorMessage: {}", stockStr.getStocknum(), e);
+            if (jsonArr.size() == 0) {
+                break;
             }
 
-            stockBeanList.add(stockStr);
+
+            for (int  j = 0; j < jsonArr.size(); j++) {
+                StockBean stockStr = jsonArr.get(j);
+                stockStr.setStocknum(stockStr.getCOMPANY_CODE());
+                stockStr.setStockname(stockStr.getCOMPANY_ABBR());
+
+
+                stockBeanList.add(stockStr);
+            }
         }
+
+        for (StockBean stockBean : stockBeanList) {
+                try {
+                    JSONObject stockShare = getStockShare(stockBean.getCOMPANY_CODE());
+                    stockBean.setTotalFlowShares(stockShare.getDoubleValue("DOMESTIC_SHARES") * 10000);
+                    stockBean.setTotalShares(stockShare.getDoubleValue("UNLIMITED_SHARES") * 10000);
+                } catch (Exception e) {
+                    logger.error("getStockShare fail:stocknum{}, errorMessage: {}", stockBean.getStocknum(), e);
+                }
+        }
+
         return stockBeanList;
     }
 
