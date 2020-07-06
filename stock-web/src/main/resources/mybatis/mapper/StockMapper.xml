@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qiwenshare.stock.mapper.StockMapper">
+    <insert id="insertStockDayInfo" parameterType="java.util.Map">
+        INSERT ignore ${stockDayInfoTable} (date, open, high, low, close, volume, amount,
+        ma5, ma10, ma20, ma30, ma60, ma120, ma200, ma250, volume120, k, d, j, dif, dea, macd, wr6, wr10
+        ,rsi6, rsi12, rsi24)
+        VALUES
+        <foreach collection="stockdayinfo" item="stockDayInfo" index="index" separator=",">
+            (#{stockDayInfo.date}, #{stockDayInfo.open}, #{stockDayInfo.high},
+            #{stockDayInfo.low}, #{stockDayInfo.close}, #{stockDayInfo.volume}, #{stockDayInfo.amount},
+            #{stockDayInfo.ma5}, #{stockDayInfo.ma10}
+            , #{stockDayInfo.ma20}, #{stockDayInfo.ma30}, #{stockDayInfo.ma60}, #{stockDayInfo.ma120}
+            , #{stockDayInfo.ma200}, #{stockDayInfo.ma250}, #{stockDayInfo.volume120}, #{stockDayInfo.k},
+            #{stockDayInfo.d}, #{stockDayInfo.j}
+            , #{stockDayInfo.dif}, #{stockDayInfo.dea}, #{stockDayInfo.macd}, #{stockDayInfo.wr6}, #{stockDayInfo.wr10}
+            , #{stockDayInfo.rsi6}, #{stockDayInfo.rsi12}, #{stockDayInfo.rsi24})
+        </foreach>
+    </insert>
+
+    <insert id="insertStockWeekInfo" parameterType="java.util.Map">
+        INSERT ignore ${stockWeekInfoTable} (date, open, high, low, close, volume, amount,
+        ma5, ma10, ma20, ma30, ma60, ma120, ma200, ma250, k, d, j, dif, dea, macd, wr6, wr10
+        ,rsi6, rsi12, rsi24)
+        VALUES
+        <foreach collection="stockweekinfo" item="stockWeekInfo" index="index" separator=",">
+            (#{stockWeekInfo.date}, #{stockWeekInfo.open}, #{stockWeekInfo.high},
+            #{stockWeekInfo.low}, #{stockWeekInfo.close}, #{stockWeekInfo.volume}, #{stockWeekInfo.amount},
+            #{stockWeekInfo.ma5}, #{stockWeekInfo.ma10}
+            , #{stockWeekInfo.ma20}, #{stockWeekInfo.ma30}, #{stockWeekInfo.ma60}, #{stockWeekInfo.ma120}
+            , #{stockWeekInfo.ma200}, #{stockWeekInfo.ma250}, #{stockWeekInfo.k}, #{stockWeekInfo.d}, #{stockWeekInfo.j}
+            , #{stockWeekInfo.dif}, #{stockWeekInfo.dea}, #{stockWeekInfo.macd}, #{stockWeekInfo.wr6},
+            #{stockWeekInfo.wr10}
+            , #{stockWeekInfo.rsi6}, #{stockWeekInfo.rsi12}, #{stockWeekInfo.rsi24})
+        </foreach>
+    </insert>
+
+    <insert id="insertStockMonthInfo" parameterType="java.util.Map">
+        INSERT ignore ${stockMonthInfoTable} (date, open, high, low, close, volume, amount,
+        ma5, ma10, ma20, ma30, ma60, ma120, ma200, ma250, k, d, j, dif, dea, macd, wr6, wr10
+        ,rsi6, rsi12, rsi24)
+        VALUES
+        <foreach collection="stockmonthinfo" item="stockMonthInfo" index="index" separator=",">
+            (#{stockMonthInfo.date}, #{stockMonthInfo.open}, #{stockMonthInfo.high},
+            #{stockMonthInfo.low}, #{stockMonthInfo.close}, #{stockMonthInfo.volume}, #{stockMonthInfo.amount},
+            #{stockMonthInfo.ma5}, #{stockMonthInfo.ma10}
+            , #{stockMonthInfo.ma20}, #{stockMonthInfo.ma30}, #{stockMonthInfo.ma60}, #{stockMonthInfo.ma120}
+            , #{stockMonthInfo.ma200}, #{stockMonthInfo.ma250}, #{stockMonthInfo.k}, #{stockMonthInfo.d},
+            #{stockMonthInfo.j}
+            , #{stockMonthInfo.dif}, #{stockMonthInfo.dea}, #{stockMonthInfo.macd}, #{stockMonthInfo.wr6},
+            #{stockMonthInfo.wr10}
+            , #{stockMonthInfo.rsi6}, #{stockMonthInfo.rsi12}, #{stockMonthInfo.rsi24})
+        </foreach>
+    </insert>
+
+    <insert id="insertStockTimeInfo" parameterType="java.util.Map">
+        INSERT ignore ${stockTimeInfoTable} (date,time, stockcode, amount, volume,
+        price, avgprice, updownrange)
+        VALUES
+        <foreach collection="stocktimeinfo" item="stockTimeInfo" index="index" separator=",">
+            (#{stockTimeInfo.date}, #{stockTimeInfo.time}, #{stockTimeInfo.stockcode},
+            #{stockTimeInfo.amount}, #{stockTimeInfo.volume},
+            #{stockTimeInfo.price}, #{stockTimeInfo.avgprice}
+            , #{stockTimeInfo.updownrange})
+        </foreach>
+    </insert>
+
+    <insert id="insertStockList" parameterType="java.util.List">
+        INSERT INTO stock(stocknum, stockname, LISTING_DATE, totalFlowShares, totalShares
+        , updownrange, updownrange3, updownrange5, turnoverrate, updownprices, open, close
+        , high, low, preclose)
+        VALUES
+        <foreach collection="list" item="stockBean" index="index" separator=",">
+            (#{stockBean.stocknum}, #{stockBean.stockname}, #{stockBean.LISTING_DATE}
+            , #{stockBean.totalFlowShares}, #{stockBean.totalShares}, #{stockBean.updownrange}
+            , #{stockBean.updownrange3}, #{stockBean.updownrange5}, #{stockBean.turnoverrate}
+            , #{stockBean.updownprices}, #{stockBean.open}, #{stockBean.close}, #{stockBean.high}
+            , #{stockBean.low}, #{stockBean.preclose})
+        </foreach>
+    </insert>
+
+    <update id="createStockDayInfoTable">
+        CREATE TABLE IF NOT EXISTS ${_parameter} (
+        `dayinfoid` bigint(20) NOT NULL AUTO_INCREMENT,
+        `date` date DEFAULT NULL,
+        `stockid` bigint(20) DEFAULT NULL,
+        `stockcode` varchar(50) DEFAULT NULL,
+        `open` double(10,3) DEFAULT NULL,
+        `high` double(10,3) DEFAULT NULL,
+        `low` double(10,3) DEFAULT NULL,
+        `close` double(10,3) DEFAULT NULL,
+        `volume` double(15,0) DEFAULT NULL,
+        `amount` double(15,0) DEFAULT NULL,
+        `ma5` double(15,5) DEFAULT NULL,
+        `ma10` double(15,5) DEFAULT NULL,
+        `ma20` double(15,5) DEFAULT NULL,
+        `ma30` double(15,5) DEFAULT NULL,
+        `ma60` double(15,5) DEFAULT NULL,
+        `ma120` double(15,5) DEFAULT NULL,
+        `ma200` double(15,5) DEFAULT NULL,
+        `ma250` double(15,5) DEFAULT NULL,
+        `volume120` double(15,0) DEFAULT NULL,
+        `k` double(15,5) DEFAULT NULL,
+        `d` double(15,5) DEFAULT NULL,
+        `j` double(15,5) DEFAULT NULL,
+        `dif` double(15,5) DEFAULT NULL,
+        `dea` double(15,5) DEFAULT NULL,
+        `macd` double(15,5) DEFAULT NULL,
+        `rsi6` double(15,5) DEFAULT NULL,
+        `rsi12` double(15,5) DEFAULT NULL,
+        `rsi24` double(15,5) DEFAULT NULL,
+        `wr6` double(15,5) DEFAULT NULL,
+        `wr10` double(15,5) DEFAULT NULL,
+        PRIMARY KEY (`dayinfoid`),
+        UNIQUE INDEX (`date`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+    </update>
+
+    <update id="createStockWeekInfoTable">
+        CREATE TABLE IF NOT EXISTS ${_parameter} (
+        `weekinfoid` bigint(20) NOT NULL AUTO_INCREMENT,
+        `date` date DEFAULT NULL,
+        `stockid` bigint(20) DEFAULT NULL,
+        `stockcode` varchar(50) DEFAULT NULL,
+        `open` double(10,3) DEFAULT NULL,
+        `high` double(10,3) DEFAULT NULL,
+        `low` double(10,3) DEFAULT NULL,
+        `close` double(10,3) DEFAULT NULL,
+        `volume` double(15,0) DEFAULT NULL,
+        `amount` double(15,0) DEFAULT NULL,
+        `ma5` double(15,5) DEFAULT NULL,
+        `ma10` double(15,5) DEFAULT NULL,
+        `ma20` double(15,5) DEFAULT NULL,
+        `ma30` double(15,5) DEFAULT NULL,
+        `ma60` double(15,5) DEFAULT NULL,
+        `ma120` double(15,5) DEFAULT NULL,
+        `ma200` double(15,5) DEFAULT NULL,
+        `ma250` double(15,5) DEFAULT NULL,
+        `k` double(15,5) DEFAULT NULL,
+        `d` double(15,5) DEFAULT NULL,
+        `j` double(15,5) DEFAULT NULL,
+        `dif` double(15,5) DEFAULT NULL,
+        `dea` double(15,5) DEFAULT NULL,
+        `macd` double(15,5) DEFAULT NULL,
+        `rsi6` double(15,5) DEFAULT NULL,
+        `rsi12` double(15,5) DEFAULT NULL,
+        `rsi24` double(15,5) DEFAULT NULL,
+        `wr6` double(15,5) DEFAULT NULL,
+        `wr10` double(15,5) DEFAULT NULL,
+        PRIMARY KEY (`weekinfoid`),
+        UNIQUE INDEX (`date`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+    </update>
+
+    <update id="createStockMonthInfoTable">
+        CREATE TABLE IF NOT EXISTS ${_parameter} (
+        `monthinfoid` bigint(20) NOT NULL AUTO_INCREMENT,
+        `date` date DEFAULT NULL,
+        `stockid` bigint(20) DEFAULT NULL,
+        `stockcode` varchar(50) DEFAULT NULL,
+        `open` double(10,3) DEFAULT NULL,
+        `high` double(10,3) DEFAULT NULL,
+        `low` double(10,3) DEFAULT NULL,
+        `close` double(10,3) DEFAULT NULL,
+        `volume` double(15,0) DEFAULT NULL,
+        `amount` double(15,0) DEFAULT NULL,
+        `ma5` double(15,5) DEFAULT NULL,
+        `ma10` double(15,5) DEFAULT NULL,
+        `ma20` double(15,5) DEFAULT NULL,
+        `ma30` double(15,5) DEFAULT NULL,
+        `ma60` double(15,5) DEFAULT NULL,
+        `ma120` double(15,5) DEFAULT NULL,
+        `ma200` double(15,5) DEFAULT NULL,
+        `ma250` double(15,5) DEFAULT NULL,
+        `k` double(15,5) DEFAULT NULL,
+        `d` double(15,5) DEFAULT NULL,
+        `j` double(15,5) DEFAULT NULL,
+        `dif` double(15,5) DEFAULT NULL,
+        `dea` double(15,5) DEFAULT NULL,
+        `macd` double(15,5) DEFAULT NULL,
+        `rsi6` double(15,5) DEFAULT NULL,
+        `rsi12` double(15,5) DEFAULT NULL,
+        `rsi24` double(15,5) DEFAULT NULL,
+        `wr6` double(15,5) DEFAULT NULL,
+        `wr10` double(15,5) DEFAULT NULL,
+        PRIMARY KEY (`monthinfoid`),
+        UNIQUE INDEX (`date`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+    </update>
+
+
+    <update id="createStockTimeInfoTable">
+        CREATE TABLE IF NOT EXISTS ${_parameter} (
+        `timeinfoid` bigint(20) NOT NULL AUTO_INCREMENT,
+        `date` date DEFAULT NULL,
+        `stockid` bigint(20) DEFAULT NULL,
+        `stockcode` varchar(50) DEFAULT NULL,
+        `price` double(10,3) DEFAULT NULL,
+        `time` time DEFAULT NULL,
+        `avgprice` double(10,3) DEFAULT NULL,
+        `volume` double(15,0) DEFAULT NULL,
+        `amount` double(15,0) DEFAULT NULL,
+        `updownrange` double(5,4) DEFAULT NULL,
+        PRIMARY KEY (`timeinfoid`),
+        UNIQUE INDEX (`date`, `time`)
+        ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+    </update>
+
+    <resultMap id="stockMap" type="com.qiwenshare.stock.domain.StockBean">
+        <id property="stockid" column="stockid"></id>
+        <result property="stocknum" column="stocknum"></result>
+        <result property="stockname" column="stockname"></result>
+        <result property="COMPANY_ABBR" column="COMPANY_ABBR"></result>
+        <result property="COMPANY_CODE" column="COMPANY_CODE"></result>
+        <result property="NUM" column="NUM"></result>
+        <result property="LISTING_DATE" column="LISTING_DATE"></result>
+        <result property="totalFlowShares" column="totalFlowShares"></result>
+        <result property="totalShares" column="totalShares"></result>
+        <result property="updownrange" column="updownrange"></result>
+        <result property="updownrange3" column="updownrange3"></result>
+        <result property="updownrange5" column="updownrange5"></result>
+        <result property="turnoverrate" column="turnoverrate"></result>
+        <result property="updownprices" column="updownprices"></result>
+        <result property="open" column="open"></result>
+        <result property="close" column="close"></result>
+        <result property="high" column="high"></result>
+        <result property="low" column="low"></result>
+
+    </resultMap>
+
+    <select id="selectTotalStockList" resultType="com.qiwenshare.stock.domain.StockBean">
+        select * from stock
+    </select>
+    <select id="selectStockList" resultMap="stockMap">
+        select * from stock
+        <if test="key != null">
+            where stockname LIKE '%${key}%'
+        </if>
+        <choose>
+            <when test="field != null and order != null">
+                order by ${field} ${order}
+            </when>
+            <otherwise>
+                order by stock.stockid asc
+            </otherwise>
+        </choose>
+        limit #{beginCount}, #{limit}
+    </select>
+
+    <select id="getStockInfoById" resultType="com.qiwenshare.stock.domain.StockBean">
+        select * from stock where stocknum = #{stockid}
+    </select>
+
+    <select id="getStockCountBySelect" resultType="int">
+        select count(*) from stock
+        where stocknum LIKE '%${key}%'
+    </select>
+    <select id="selectStockDayInfoList" parameterType="String" resultType="com.qiwenshare.stock.domain.StockDayInfo">
+        SELECT * FROM ${stockTableName} order by date asc
+    </select>
+
+    <select id="selectStockweekListByStockNum" parameterType="String" resultType="com.qiwenshare.stock.domain.StockWeekInfo">
+        SELECT * FROM ${stockTableName} order by date asc
+    </select>
+
+    <select id="selectStockmonthListByStockNum" parameterType="String" resultType="com.qiwenshare.stock.domain.StockMonthInfo">
+        SELECT * FROM ${stockTableName} order by date asc
+    </select>
+
+    <select id="selectStocktimeListByStockNum" parameterType="com.qiwenshare.stock.domain.StockTimeInfo"
+            resultType="com.qiwenshare.stock.domain.StockTimeInfo">
+        select * from ${stockTableName} where date = (select max(date) from ${stockTableName})
+        order by time asc
+    </select>
+
+    <select id="getStockDayInfoBySelect" resultType="com.qiwenshare.stock.domain.StockDayInfo">
+        SELECT * FROM stockdayinfo
+        <if test="key != null">
+            where stockid = ${key}
+        </if>
+
+        <choose>
+            <when test="sortField != null and sortOrder != null">
+                order by ${sortField} ${sortOrder}
+            </when>
+            <otherwise>
+                order by stockid asc
+            </otherwise>
+        </choose>
+        limit #{beginCount}, #{limit}
+    </select>
+
+    <select id="getStockDayInfoCountBySelect" resultType="int">
+        SELECT count(*) FROM stockdayinfo
+        <if test="key != null">
+            where stockid = ${key}
+        </if>
+    </select>
+
+</mapper>

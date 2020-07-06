@@ -123,7 +123,10 @@ public class ProxyHttpRequest {
         } catch (IOException e) {
             System.out.println(e);
             isRequestSuccess = false;
-            proxyBeans.remove(currentRandomIndex);
+            if (proxyBeans.size() > currentRandomIndex) {
+                proxyBeans.remove(currentRandomIndex);
+            }
+
 //            ProxyBean proxyBean1 = new ProxyBean();
 //            proxyBean1.setProxyip("123.56.9.174");
 //            proxyBean1.setProxyport(8761);

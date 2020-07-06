@@ -2,6 +2,7 @@ package com.qiwenshare.stock.service;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.qiwenshare.common.cbb.DateUtil;
 import com.qiwenshare.common.cbb.HibernateUtil;
@@ -33,11 +34,14 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Service
 public class StockDIService implements IStockDIService {
 
     private static final Logger logger = LoggerFactory.getLogger(StockDIService.class);
+    public static ExecutorService executor = Executors.newFixedThreadPool(50);
     @Resource
     StockMapper stockMapper;
 
@@ -228,7 +232,12 @@ public class StockDIService implements IStockDIService {
                 sendResult = new com.qiwenshare.common.cbb.ProxyHttpRequest().sendGet(url, param);
                 retryCount++;
             }
-            JSONObject pageHelp = JSONObject.parseObject(sendResult).getJSONObject("pageHelp");
+            JSONObject pageHelp = new JSONObject();
+            try {
+                pageHelp = JSONObject.parseObject(sendResult).getJSONObject("pageHelp");
+            } catch (JSONException e) {
+                logger.error("解析jsonb报错："+ pageHelp.toJSONString());
+            }
             List<StockBean> jsonArr = JSON.parseArray(pageHelp.getString("data"), StockBean.class);
 
             if (jsonArr.size() == 0) {
@@ -247,13 +256,19 @@ public class StockDIService implements IStockDIService {
         }
 
         for (StockBean stockBean : stockBeanList) {
-                try {
-                    JSONObject stockShare = getStockShare(stockBean.getCOMPANY_CODE());
-                    stockBean.setTotalFlowShares(stockShare.getDoubleValue("DOMESTIC_SHARES") * 10000);
-                    stockBean.setTotalShares(stockShare.getDoubleValue("UNLIMITED_SHARES") * 10000);
-                } catch (Exception e) {
-                    logger.error("getStockShare fail:stocknum{}, errorMessage: {}", stockBean.getStocknum(), e);
+            executor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        logger.info("股票详情获取中：", stockBean.getStocknum());
+                        JSONObject stockShare = getStockShare(stockBean.getCOMPANY_CODE());
+                        stockBean.setTotalFlowShares(stockShare.getDoubleValue("DOMESTIC_SHARES") * 10000);
+                        stockBean.setTotalShares(stockShare.getDoubleValue("UNLIMITED_SHARES") * 10000);
+                    } catch (Exception e) {
+                        logger.error("getStockShare fail:stocknum{}, errorMessage: {}", stockBean.getStocknum(), e);
+                    }
                 }
+            });
         }
 
         return stockBeanList;

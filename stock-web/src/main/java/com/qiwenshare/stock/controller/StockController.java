@@ -11,6 +11,7 @@ import com.qiwenshare.stock.api.*;
 import com.qiwenshare.stock.domain.*;
 import com.qiwenshare.stock.executor.ReplayRunnable;
 import com.qiwenshare.stock.executor.StockService;
+import com.qiwenshare.stock.service.StockDIService;
 import com.qiwenshare.stock.websocket.StockWebsocket;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -299,7 +300,7 @@ public class StockController {
     @Operation(summary = "获取股票列表")
     @RequestMapping("/getstocklist")
     @ResponseBody
-    public String getStockList(@RequestBody TableQueryBean tableQueryBean) {
+    public String getStockList(TableQueryBean tableQueryBean) {
         TableData<List<StockBean>> miniuiTableData = new TableData<List<StockBean>>();
         List<StockBean> stockList = stockDIService.selectStockList(tableQueryBean);
         int StockCount = stockDIService.getStockCountBySelect(tableQueryBean);

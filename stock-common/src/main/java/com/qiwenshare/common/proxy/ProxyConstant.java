@@ -25,6 +25,6 @@ public class ProxyConstant {
     /**
      * 获取代理IP的数量
      */
-    public static final int SERVER_PROXY_COUNT = 100;
+    public static final int SERVER_PROXY_COUNT = 500;
 
 }
