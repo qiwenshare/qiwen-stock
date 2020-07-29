@@ -1,6 +1,8 @@
 package com.qiwenshare.common.domain;
 
 public class TaskProcess {
+    private int taskId;
+    private String taskName;
     private int totalCount;
     private int completeCount;
     private String taskInfo;
@@ -8,6 +10,22 @@ public class TaskProcess {
      * 是否任务运行
      */
     private boolean isRunTask;
+
+    public int getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(int taskId) {
+        this.taskId = taskId;
+    }
+
+    public String getTaskName() {
+        return taskName;
+    }
+
+    public void setTaskName(String taskName) {
+        this.taskName = taskName;
+    }
 
     public int getTotalCount() {
         return totalCount;

@@ -45,10 +45,11 @@ public class StockWeekInfoRunnable implements Runnable {
 
             stockWeekInfoService.insertStockWeekInfo("stockweekinfo_" + stockBean.getStocknum(), stockWeekInfoList);
 
-
+            taskProcess.setTaskId(2);
+            taskProcess.setTaskName("更新周线任务");
             taskProcess.setCompleteCount(updateCount);
             taskProcess.setTotalCount(totalCount);
-            taskProcess.setTaskInfo("采集项：" + stockBean.getStocknum() + "完成进度：" + updateCount + "/" + totalCount);
+            taskProcess.setTaskInfo("采集项：" + stockBean.getStocknum() + "-" + stockBean.getStockname() + ", 当前进度：" + updateCount + "/" + totalCount);
             taskProcess.setRunTask(totalCount != updateCount);
             StockWebsocket.pushTaskProcess(taskProcess);
         }

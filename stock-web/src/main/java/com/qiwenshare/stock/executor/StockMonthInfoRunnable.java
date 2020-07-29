@@ -46,10 +46,11 @@ public class StockMonthInfoRunnable implements Runnable {
 
             stockMonthInfoService.insertStockMonthInfo("stockmonthinfo_" + stockBean.getStocknum(), stockMonthInfoList);
 
-
+            taskProcess.setTaskId(3);
+            taskProcess.setTaskName("更新月线任务");
             taskProcess.setCompleteCount(updateCount);
             taskProcess.setTotalCount(totalCount);
-            taskProcess.setTaskInfo("采集项：" + stockBean.getStocknum() + "完成进度：" + updateCount + "/" + totalCount);
+            taskProcess.setTaskInfo("采集项：" + stockBean.getStocknum() + "-" + stockBean.getStockname() + ", 当前进度：" + updateCount + "/" + totalCount);
             taskProcess.setRunTask(totalCount != updateCount);
             StockWebsocket.pushTaskProcess(taskProcess);
         }

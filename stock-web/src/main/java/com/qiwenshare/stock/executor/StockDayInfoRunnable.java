@@ -73,9 +73,11 @@ public class StockDayInfoRunnable implements Runnable {
 
                 logger.error("updateDayInfo error: {}", e);
             }
+            taskProcess.setTaskId(1);
+            taskProcess.setTaskName("更新日线任务");
             taskProcess.setCompleteCount(updateCount);
             taskProcess.setTotalCount(totalCount);
-            taskProcess.setTaskInfo("采集项：" + stockBean.getStocknum() + "完成进度：" + updateCount + "/" + totalCount);
+            taskProcess.setTaskInfo("采集项：" + stockBean.getStocknum() + "-" + stockBean.getStockname() + ", 当前进度：" + updateCount + "/" + totalCount);
             taskProcess.setRunTask(totalCount != updateCount);
             StockWebsocket.pushTaskProcess(taskProcess);
 
