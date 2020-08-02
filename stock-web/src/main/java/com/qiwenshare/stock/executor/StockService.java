@@ -12,7 +12,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class StockService {
-    private static final int NTHREADS = 40;
+    private static final int NTHREADS = 20;
     private static final Logger logger = LoggerFactory.getLogger(StockService.class);
     public static ExecutorService stockExecutor;
     public static ExecutorService stockDayInfoExecutor;
