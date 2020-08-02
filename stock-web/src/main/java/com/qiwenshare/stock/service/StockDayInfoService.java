@@ -1,13 +1,17 @@
 package com.qiwenshare.stock.service;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
 import com.qiwenshare.common.cbb.DateUtil;
 import com.qiwenshare.stock.api.IStockDayInfoService;
 import com.qiwenshare.stock.constant.StockConstant;
 import com.qiwenshare.stock.domain.StockBean;
 import com.qiwenshare.stock.domain.StockDayInfo;
 import com.qiwenshare.stock.domain.StockKLineObj;
+import com.qiwenshare.stock.executor.StockDayInfoRunnable;
 import com.qiwenshare.stock.mapper.StockMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -20,7 +24,7 @@ import java.util.Map;
 
 @Service
 public class StockDayInfoService implements IStockDayInfoService {
-
+    private static final Logger logger = LoggerFactory.getLogger(StockDayInfoService.class);
     @Resource
     StockMapper stockMapper;
 
@@ -84,8 +88,14 @@ public class StockDayInfoService implements IStockDayInfoService {
         Map<String, String> param = new HashMap<String, String>();
         param.put("begin", "-1800");
         param.put("end", "-1");
-        String stockJson = new com.qiwenshare.common.cbb.ProxyHttpRequest().sendGet(url, param);
-        StockKLineObj stockObjBean = JSON.parseObject(stockJson, StockKLineObj.class);
+        StockKLineObj stockObjBean = null;
+        String stockJson = "";
+        try {
+            stockJson = new com.qiwenshare.common.cbb.ProxyHttpRequest().sendGet(url, param);
+            stockObjBean = JSON.parseObject(stockJson, StockKLineObj.class);
+        } catch (JSONException e) {
+            logger.error("JSONException:抓取报文{}", stockJson);
+        }
 
         if (stockObjBean == null) {
             System.out.println("stockObjBean空指针异常:" + stockBean.getStocknum());

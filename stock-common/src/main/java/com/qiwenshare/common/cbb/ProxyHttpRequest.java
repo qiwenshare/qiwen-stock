@@ -133,7 +133,7 @@ public class ProxyHttpRequest {
 //            proxyBeans.add(proxyBean1);
             System.out.println("此代理不通，正在重试。。" + JSON.toJSONString(proxyBean));
         }
-        if (!isRequestSuccess) {
+        if (!isRequestSuccess || doc.text().indexOf("Welcome To Zscaler Directory Authentication") != -1) {
             return sendGet(url, param);
         }
 

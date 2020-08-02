@@ -48,6 +48,7 @@ public class StockTimeInfoService implements IStockTimeInfoService {
         param.put("end", "-1");
         param.put("select", "time,price,volume");
         String stockTimeLineJson = new com.qiwenshare.common.cbb.ProxyHttpRequest().sendGet(url, param);
+
         StockTimeLineObj stockTimeLineObj = JSON.parseObject(stockTimeLineJson, StockTimeLineObj.class);
         if (stockTimeLineObj == null) {
             System.out.println("网络不可用:" + stockBean.getStocknum());
