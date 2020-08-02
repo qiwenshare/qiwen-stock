@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.qiwenshare.common.cbb.DateUtil;
-import com.qiwenshare.common.cbb.HibernateUtil;
+//import com.qiwenshare.common.cbb.HibernateUtil;
 import com.qiwenshare.common.cbb.MiniuiUtil;
 import com.qiwenshare.common.domain.TableQueryBean;
 import com.qiwenshare.stock.analysis.tactics.CattleCatchingAnalysis;
@@ -19,6 +19,7 @@ import com.qiwenshare.stock.indicator.product.RSI;
 import com.qiwenshare.stock.mapper.StockMapper;
 import org.hibernate.Criteria;
 import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Expression;
 import org.hibernate.criterion.SimpleExpression;
@@ -26,9 +27,11 @@ import org.hibernate.query.Query;
 import org.hibernate.type.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import javax.persistence.EntityManagerFactory;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,10 +47,13 @@ public class StockDIService implements IStockDIService {
     public static ExecutorService executor = Executors.newFixedThreadPool(50);
     @Resource
     StockMapper stockMapper;
+    @Autowired
+    private EntityManagerFactory entityManagerFactory;
 
     @Override
     public StockBidBean getStockBidBean(String stockNum) {
-        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+        Session sqlsession = entityManagerFactory.unwrap(SessionFactory.class).openSession();
+//        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
         Transaction tx = null;
         try {
             tx = sqlsession.beginTransaction();
@@ -66,7 +72,8 @@ public class StockDIService implements IStockDIService {
 
     @Override
     public EchnicalaspectBean getEchnicalaspectBean(long stockid) {
-        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+//        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+        Session sqlsession = entityManagerFactory.unwrap(SessionFactory.class).openSession();
         Transaction tx = null;
         try {
             tx = sqlsession.beginTransaction();
@@ -87,7 +94,8 @@ public class StockDIService implements IStockDIService {
 
     @Override
     public AbnormalactionBean getAbnormalactionBean(long stockid) {
-        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+//        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+        Session sqlsession = entityManagerFactory.unwrap(SessionFactory.class).openSession();
         Transaction tx = null;
         try {
             tx = sqlsession.beginTransaction();
@@ -160,7 +168,8 @@ public class StockDIService implements IStockDIService {
 
     @Override
     public List<StockBean> selectStockBeanList(String key) {
-        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+//        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+        Session sqlsession = entityManagerFactory.unwrap(SessionFactory.class).openSession();
         Transaction tx = null;
         try {
             tx = sqlsession.beginTransaction();
@@ -276,7 +285,8 @@ public class StockDIService implements IStockDIService {
 
     @Override
     public void updateStockBid(StockBidBean stockBidBean) {
-        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+        Session sqlsession = entityManagerFactory.unwrap(SessionFactory.class).openSession();
+//        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
         Transaction transaction = sqlsession.beginTransaction();
         System.out.println(stockBidBean.getBoughtcount1());
         Query query = sqlsession.createQuery("update StockBidBean set " +
@@ -336,7 +346,8 @@ public class StockDIService implements IStockDIService {
 
     @Override
     public void updateEchnicalaspect(EchnicalaspectBean echnicalaspectBean) {
-        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+//        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+        Session sqlsession = entityManagerFactory.unwrap(SessionFactory.class).openSession();
         Transaction transaction = sqlsession.beginTransaction();
 
         Query query = sqlsession.createQuery("update EchnicalaspectBean set "
@@ -383,7 +394,8 @@ public class StockDIService implements IStockDIService {
 
     @Override
     public void insertEchnicalaspect(EchnicalaspectBean echnicalaspectBean) {
-        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+//        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+        Session sqlsession = entityManagerFactory.unwrap(SessionFactory.class).openSession();
         Transaction transaction = sqlsession.beginTransaction();
         sqlsession.save(echnicalaspectBean);
         transaction.commit();
@@ -392,7 +404,8 @@ public class StockDIService implements IStockDIService {
 
     @Override
     public void insertStockOptional(StockOptionalBean stockOptionalBean) {
-        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+//        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+        Session sqlsession = entityManagerFactory.unwrap(SessionFactory.class).openSession();
         Transaction transaction = sqlsession.beginTransaction();
         sqlsession.save(stockOptionalBean);
         transaction.commit();
@@ -401,7 +414,8 @@ public class StockDIService implements IStockDIService {
 
     @Override
     public void updateStock(StockBean stockBean) {
-        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+//        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+        Session sqlsession = entityManagerFactory.unwrap(SessionFactory.class).openSession();
         Transaction transaction = sqlsession.beginTransaction();
 
         Query query = sqlsession.createQuery("update StockBean set "
@@ -490,7 +504,8 @@ public class StockDIService implements IStockDIService {
 
     @Override
     public void insertStockBid(StockBidBean stockBidBean) {
-        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+//        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+        Session sqlsession = entityManagerFactory.unwrap(SessionFactory.class).openSession();
         Transaction transaction = sqlsession.beginTransaction();
         sqlsession.save(stockBidBean);
         transaction.commit();
@@ -500,7 +515,8 @@ public class StockDIService implements IStockDIService {
     @Override
     public List<ReplayBean> selectAllReplayList(TableQueryBean tableQueryBean) {
         TableQueryBean miniuiTablePageQuery = MiniuiUtil.getMiniuiTablePageQuery(tableQueryBean);
-        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+//        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+        Session sqlsession = entityManagerFactory.unwrap(SessionFactory.class).openSession();
         Transaction tx = null;
         try {
             tx = sqlsession.beginTransaction();
@@ -520,7 +536,8 @@ public class StockDIService implements IStockDIService {
 
     @Override
     public List<ReplayBean> selectReplayList(long stockid) {
-        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+//        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+        Session sqlsession = entityManagerFactory.unwrap(SessionFactory.class).openSession();
         Transaction tx = null;
         try {
             tx = sqlsession.beginTransaction();
@@ -539,7 +556,8 @@ public class StockDIService implements IStockDIService {
 
     @Override
     public void deleteReplay(long stockid) {
-        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+//        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+        Session sqlsession = entityManagerFactory.unwrap(SessionFactory.class).openSession();
         Transaction transaction = sqlsession.beginTransaction();
         Query query = sqlsession.createQuery("delete from ReplayBean where stockid = :stockid");
         query.setParameter("stockid", stockid, LongType.INSTANCE);
@@ -552,7 +570,8 @@ public class StockDIService implements IStockDIService {
 
     @Override
     public void insertReplay(List<ReplayBean> replayBeanList) {
-        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+//        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+        Session sqlsession = entityManagerFactory.unwrap(SessionFactory.class).openSession();
         Transaction transaction = sqlsession.beginTransaction();
         for (int i = 0; i < replayBeanList.size(); i++) {
             sqlsession.save(replayBeanList.get(i));
@@ -569,7 +588,8 @@ public class StockDIService implements IStockDIService {
 
     @Override
     public void insertAbnormalaAction(AbnormalactionBean abnormalactionBean) {
-        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+//        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+        Session sqlsession = entityManagerFactory.unwrap(SessionFactory.class).openSession();
         Transaction transaction = sqlsession.beginTransaction();
         sqlsession.save(abnormalactionBean);
         transaction.commit();
@@ -578,7 +598,8 @@ public class StockDIService implements IStockDIService {
 
     @Override
     public void updateAbnormalaAction(AbnormalactionBean abnormalactionBean) {
-        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+//        Session sqlsession = HibernateUtil.getInstance().getSessionFactory().openSession();
+        Session sqlsession = entityManagerFactory.unwrap(SessionFactory.class).openSession();
         Transaction transaction = sqlsession.beginTransaction();
 
         Query query = sqlsession.createQuery("update AbnormalactionBean set "

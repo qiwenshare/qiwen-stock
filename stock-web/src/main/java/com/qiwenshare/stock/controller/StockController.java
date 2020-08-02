@@ -434,13 +434,13 @@ public class StockController {
      * @return
      */
     @Operation(summary = "停止更新股票信息")
-    @RequestMapping("/stopupdatestockdata")
+    @RequestMapping("/stopupdatetaskbytype")
     @ResponseBody
-    public String stopUpdateStockData() {
+    public String stopUpdateTaskByType(int taskType) {
         RestResult<String> restResult = new RestResult<String>();
 
         try {
-            Boolean isStopSuccess = new StockService().stop(0);
+            Boolean isStopSuccess = new StockService().stop(taskType);
             if (isStopSuccess) {
                 StockWebsocket.pushTaskState("任务已经停止", false);
                 restResult.setData("任务停止成功");
@@ -454,7 +454,6 @@ public class StockController {
 
         StockWebsocket.pushTaskState("任务已经停止", false);
 
-        System.out.println("停止成功！");
         restResult.setSuccess(true);
         return JSON.toJSONString(restResult);
     }
