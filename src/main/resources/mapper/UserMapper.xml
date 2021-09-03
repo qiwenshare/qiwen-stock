@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.qiwenshare.stock.mapper.UserMapper">
+
+    <insert id="insertUser" parameterType="com.qiwenshare.stock.domain.UserBean" useGeneratedKeys="true" keyProperty="userId">
+        INSERT INTO user (username, salt, PASSWORD, qqPassword, telephone, sex, openId, imageUrl, registerTime)
+        VALUES (#{username},#{salt}, #{password}, #{qqPassword}, #{telephone}, #{sex}, #{openId}, #{imageUrl}, #{registerTime});
+    </insert>
+
+    <insert id="insertUserRole" parameterType="Long">
+        INSERT INTO user_role (userId, roleId)
+        VALUES (#{param1}, #{param2});
+    </insert>
+
+</mapper>
