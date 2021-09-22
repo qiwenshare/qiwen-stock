@@ -19,6 +19,7 @@ public enum StockTaskTypeEnum {
         this.typeName = typeName;
     }
 
+
     public int getTypeCode() {
         return typeCode;
     }

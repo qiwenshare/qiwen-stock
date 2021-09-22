@@ -1,5 +1,7 @@
 package com.qiwenshare.stock.executor;
 
+import com.qiwenshare.stock.api.IAbnormalaActionService;
+import com.qiwenshare.stock.api.IStockBidService;
 import com.qiwenshare.stock.api.IStockDIService;
 import com.qiwenshare.stock.api.IStockTimeInfoService;
 import com.qiwenshare.stock.common.TaskProcess;
@@ -18,20 +20,31 @@ public class StockTimeInfoRunnable implements Runnable {
     public static volatile int updateCount = 0;
     public static int totalCount = 0;
     public StockBean stockBean;
+
     IStockDIService stockDIService;
+
+    IStockBidService stockBidService;
+
     IStockTimeInfoService stockTimeInfoService;
 
-    public StockTimeInfoRunnable(StockBean stockBean, IStockDIService stockDIService, IStockTimeInfoService stockTimeInfoService) {
+    IAbnormalaActionService abnormalaActionService;
+
+    public StockTimeInfoRunnable(StockBean stockBean, IStockDIService stockDIService,
+                                 IStockTimeInfoService stockTimeInfoService,
+                                 IAbnormalaActionService abnormalaActionService,
+                                 IStockBidService stockBidService) {
         this.stockBean = stockBean;
         this.stockDIService = stockDIService;
         this.stockTimeInfoService = stockTimeInfoService;
+        this.abnormalaActionService = abnormalaActionService;
+        this.stockBidService = stockBidService;
     }
 
     @Override
     public void run() {
         if (!StockService.stockTimeInfoExecutor.isShutdown()) {
             List<StockTimeInfo> stockTimeInfoList = stockTimeInfoService.getStockTimeInfoListByStockBean(stockBean);
-            StockBidBean stockBidBean = stockDIService.getBidByStockBean(stockBean);
+            StockBidBean stockBidBean = stockBidService.getBidByStockBean(stockBean);
             if (stockTimeInfoList == null) {
                 synchronized (StockController.class) {
                     updateCount++;
@@ -44,8 +57,8 @@ public class StockTimeInfoRunnable implements Runnable {
             stockTimeInfoService.insertStockTimeInfo("stocktimeinfo_" + stockBean.getStocknum(), stockTimeInfoList);
             AbnormalactionBean abnormalaction = new Abnormalaction().getAbnormalaction(stockTimeInfoList);
             abnormalaction.setStockid(stockBean.getStockid());
-            stockDIService.updateStockBid(stockBidBean);
-            stockDIService.updateAbnormalaAction(abnormalaction);
+            stockBidService.updateStockBid(stockBidBean);
+            abnormalaActionService.updateAbnormalaAction(abnormalaction);
 
 
             TaskProcess taskProcess = new TaskProcess();

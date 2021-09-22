@@ -248,7 +248,9 @@
                 order by stock.stockid asc
             </otherwise>
         </choose>
-        limit #{beginCount}, #{limit}
+        <if test="beginCount != null or limit != null">
+            limit #{beginCount}, #{limit}
+        </if>
     </select>
 
     <select id="getStockInfoById" resultType="com.qiwenshare.stock.domain.StockBean">

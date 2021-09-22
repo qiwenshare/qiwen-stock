@@ -56,7 +56,13 @@ public class StockTimeInfoService implements IStockTimeInfoService {
             log.error("stockTimeLineJson爬取数据为空：stockNum:" + stockBean.getStocknum());
             return null;
         }
-        StockTimeLineObj stockTimeLineObj = JSON.parseObject(stockTimeLineJson, StockTimeLineObj.class);
+        StockTimeLineObj stockTimeLineObj = null;
+        try {
+            stockTimeLineObj = JSON.parseObject(stockTimeLineJson, StockTimeLineObj.class);
+        } catch (Exception e) {
+            log.error("解析分时数据报错：stockTileLineJson: {}", stockTimeLineJson);
+        }
+
         if (stockTimeLineObj == null) {
             log.error("stockTimeLineJson解析数据为空:stockNum:" + stockBean.getStocknum());
             return null;

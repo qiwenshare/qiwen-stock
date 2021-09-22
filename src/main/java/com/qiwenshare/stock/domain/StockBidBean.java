@@ -1,12 +1,18 @@
 package com.qiwenshare.stock.domain;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "stockbid")
+@TableName("stockbid")
 public class StockBidBean {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @TableId(type = IdType.AUTO)
     private int stockbidid;
 
     @Column

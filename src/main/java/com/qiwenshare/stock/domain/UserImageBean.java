@@ -1,5 +1,9 @@
 package com.qiwenshare.stock.domain;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -10,6 +14,7 @@ import java.io.Serializable;
  */
 @Table(name = "userimage")
 @Entity
+@TableName("userimage")
 public class UserImageBean implements Serializable {
     /**
      * 序列id
@@ -17,6 +22,7 @@ public class UserImageBean implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @TableId(type = IdType.AUTO)
     private long imageid;
     @Column
     private long userid;

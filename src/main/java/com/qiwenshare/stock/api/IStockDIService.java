@@ -28,42 +28,11 @@ public interface IStockDIService {
 
     List<StockBean> getStockListByScript();
 
-    EchnicalaspectBean getEchnicalaspectBean(long stockid);
 
-
-    EchnicalaspectBean getEchnicalaspectInfo(List<StockDayInfo> stockDayInfoList, StockBean stockBean);
-
-    void insertEchnicalaspect(EchnicalaspectBean echnicalaspectBean);
-
-    void insertStockOptional(StockOptionalBean stockOptionalBean);
-
-    void updateEchnicalaspect(EchnicalaspectBean echnicalaspectBean);
 
     StockBean getStockInfo(StockBean stockBean, List<StockDayInfo> stockdayinfoList);
 
     void updateStock(StockBean stockBean);
 
-    void insertStockBid(StockBidBean stockBidBean);
 
-
-    StockBidBean getStockBidBean(String stockNum);
-
-
-    StockBidBean getBidByStockBean(StockBean stockBean);
-
-    void updateStockBid(StockBidBean stockBidBean);
-
-    void insertAbnormalaAction(AbnormalactionBean abnormalactionBean);
-
-    void updateAbnormalaAction(AbnormalactionBean abnormalactionBean);
-
-    AbnormalactionBean getAbnormalactionBean(long stockid);
-
-    void insertReplay(List<ReplayBean> replayBeanList);
-
-    void deleteReplay(long stockid);
-
-    List<ReplayBean> selectReplayList(long stockid);
-
-    List<ReplayBean> selectAllReplayList(TableQueryBean tableQueryBean);
 }

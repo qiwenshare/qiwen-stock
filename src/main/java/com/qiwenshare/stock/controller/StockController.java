@@ -8,6 +8,7 @@ import com.qiwenshare.stock.api.*;
 import com.qiwenshare.stock.common.HttpRequest;
 import com.qiwenshare.stock.common.TableData;
 import com.qiwenshare.stock.common.TableQueryBean;
+import com.qiwenshare.stock.constant.StockTaskTypeEnum;
 import com.qiwenshare.stock.domain.*;
 import com.qiwenshare.stock.executor.ReplayRunnable;
 import com.qiwenshare.stock.executor.StockService;
@@ -51,7 +52,18 @@ public class StockController {
     IStockWeekInfoService stockWeekInfoService;
     @Resource
     IStockMonthInfoService stockMonthInfoService;
-
+    @Resource
+    StockService stockService;
+    @Resource
+    IStockBidService stockBidService;
+    @Resource
+    IStockOptionalService stockOptionalService;
+    @Resource
+    IReplayService replayService;
+    @Resource
+    IEchnicalaspectService echnicalaspectService;
+    @Resource
+    IAbnormalaActionService abnormalaActionService;
     /**
      * 日线
      *
@@ -75,7 +87,7 @@ public class StockController {
     @RequestMapping("/getstockbid")
     @ResponseBody
     public String getStockBid(String stockNum) {
-        StockBidBean stockBidBean = stockDIService.getStockBidBean(stockNum);
+        StockBidBean stockBidBean = stockBidService.getStockBidBean(stockNum);
         return JSON.toJSONString(stockBidBean);
     }
 
@@ -130,7 +142,7 @@ public class StockController {
     @ResponseBody
     public String addStockOptional(StockOptionalBean stockOptionalBean) {
         RestResult<String> restResult = new RestResult<String>();
-        stockDIService.insertStockOptional(stockOptionalBean);
+        stockOptionalService.insertStockOptional(stockOptionalBean);
 
         restResult.setSuccess(true);
         return JSON.toJSONString(restResult);
@@ -147,7 +159,7 @@ public class StockController {
     @ResponseBody
     public String selectReplayList(int stockid) {
         TableData<List<ReplayBean>> miniuiTableData = new TableData<List<ReplayBean>>();
-        List<ReplayBean> replayBeanList = stockDIService.selectReplayList(stockid);
+        List<ReplayBean> replayBeanList = replayService.selectReplayList(stockid);
 
         miniuiTableData.setData(replayBeanList);
         miniuiTableData.setSuccess(true);
@@ -166,7 +178,7 @@ public class StockController {
     @ResponseBody
     public String selectAllReplayList(@RequestBody TableQueryBean tableQueryBean) {
         TableData<List<ReplayBean>> miniuiTableData = new TableData<List<ReplayBean>>();
-        List<ReplayBean> replayBeanList = stockDIService.selectAllReplayList(tableQueryBean);
+        List<ReplayBean> replayBeanList = replayService.selectAllReplayList(tableQueryBean.getBeginCount(), tableQueryBean.getLimit());
 
         miniuiTableData.setData(replayBeanList);
         miniuiTableData.setSuccess(true);
@@ -187,9 +199,9 @@ public class StockController {
         RestResult<String> restResult = new RestResult<String>();
         List<StockDayInfo> stockDayInfoList = stockDayInfoService.getStockdaybar(stockBean.getStocknum());
         Collections.reverse(stockDayInfoList);
-        stockDIService.deleteReplay(stockBean.getStockid());
+        replayService.deleteReplay(stockBean.getStockid());
         List<ReplayBean> replayList = new ReplayOperation().getReplayInfo(stockDayInfoList, stockBean);
-        stockDIService.insertReplay(replayList);
+        replayService.insertReplay(replayList);
         restResult.setSuccess(true);
         return JSON.toJSONString(restResult);
     }
@@ -209,7 +221,7 @@ public class StockController {
         ReplayRunnable.totalCount = stocklist.size();
         ReplayRunnable.updateCount = 0;
         for (StockBean stockBean : stocklist) {
-            Runnable task = new ReplayRunnable(stockBean, stockDIService, stockDayInfoService);
+            Runnable task = new ReplayRunnable(stockBean, replayService, stockDayInfoService);
             stockReplayexec.execute(task);
         }
 
@@ -279,7 +291,7 @@ public class StockController {
         if (newStockList.size() > 0) {
             stockDIService.insertStockList(newStockList);
 
-            new StockService(stockDIService).start(newStockList);
+            stockService.start(newStockList, StockTaskTypeEnum.STOCK);
 
             stockDIService.initStockTable();
             restResult.setData("正在更新股票数量：" + newStockList.size());
@@ -320,7 +332,7 @@ public class StockController {
     @RequestMapping("/getechnicalaspect")
     @ResponseBody
     public String getEchnicalaspect(int stockid) {
-        EchnicalaspectBean echnicalaspectBean = stockDIService.getEchnicalaspectBean(stockid);
+        EchnicalaspectBean echnicalaspectBean = echnicalaspectService.getEchnicalaspectBean(stockid);
 
         return JSON.toJSONString(echnicalaspectBean);
     }
@@ -334,7 +346,7 @@ public class StockController {
     @RequestMapping("/getabnormalaction")
     @ResponseBody
     public String getAbnormalaction(int stockid) {
-        AbnormalactionBean abnormalactionBean = stockDIService.getAbnormalactionBean(stockid);
+        AbnormalactionBean abnormalactionBean = abnormalaActionService.getAbnormalactionBean(stockid);
 
         return JSON.toJSONString(abnormalactionBean);
     }
@@ -365,7 +377,7 @@ public class StockController {
         //1、获取所有股票列表
         List<StockBean> stocklist = stockDIService.selectTotalStockList();
 
-        new StockService(stockDIService, stockTimeInfoService).start(stocklist);
+        stockService.start(stocklist, StockTaskTypeEnum.TIME);
 
         restResult.setSuccess(true);
         return JSON.toJSONString(restResult);
@@ -385,7 +397,7 @@ public class StockController {
 
         //1、获取所有股票列表
         List<StockBean> stocklist = stockDIService.selectTotalStockList();
-        new StockService(stockDIService, stockDayInfoService).start(stocklist);
+        stockService.start(stocklist, StockTaskTypeEnum.DAY);
 
 
         restResult.setSuccess(true);
@@ -405,7 +417,7 @@ public class StockController {
         //1、获取所有股票列表
         List<StockBean> stocklist = stockDIService.selectTotalStockList();
 
-        new StockService(stockDayInfoService, stockWeekInfoService).start(stocklist);
+        stockService.start(stocklist, StockTaskTypeEnum.WEEK);
         restResult.setSuccess(true);
         return JSON.toJSONString(restResult);
     }
@@ -423,7 +435,7 @@ public class StockController {
         //exec = Executors.newFixedThreadPool(NTHREADS);
         //1、获取所有股票列表
         List<StockBean> stocklist = stockDIService.selectTotalStockList();
-        new StockService(stockDayInfoService, stockMonthInfoService).start(stocklist);
+        stockService.start(stocklist, StockTaskTypeEnum.MONTH);
         restResult.setSuccess(true);
         return JSON.toJSONString(restResult);
     }
@@ -439,8 +451,15 @@ public class StockController {
     public String stopUpdateTaskByType(int taskType) {
         RestResult<String> restResult = new RestResult<String>();
 
+        StockTaskTypeEnum enum1 = null;
+        //values获取枚举所有内容
+        for(StockTaskTypeEnum stockTaskTypeEnum : StockTaskTypeEnum.values()){
+            if(stockTaskTypeEnum.getTypeCode() == taskType){
+                enum1 =  stockTaskTypeEnum;
+            }
+        }
         try {
-            Boolean isStopSuccess = new StockService().stop(taskType);
+            Boolean isStopSuccess = stockService.stop(enum1);
             if (isStopSuccess) {
                 StockWebsocket.pushTaskState("任务已经停止", false);
                 restResult.setData("任务停止成功");
@@ -470,7 +489,7 @@ public class StockController {
         RestResult<String> restResult = new RestResult<String>();
 
         try {
-            Boolean isStopSuccess = new StockService().stop(1);
+            Boolean isStopSuccess = new StockService().stop(StockTaskTypeEnum.TIME);
             if (isStopSuccess) {
                 StockWebsocket.pushTaskState("任务已经停止", false);
                 restResult.setData("任务停止成功");

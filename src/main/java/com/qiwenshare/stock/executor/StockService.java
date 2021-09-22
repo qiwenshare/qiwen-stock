@@ -3,115 +3,89 @@ package com.qiwenshare.stock.executor;
 import com.qiwenshare.stock.api.*;
 import com.qiwenshare.stock.constant.StockTaskTypeEnum;
 import com.qiwenshare.stock.domain.StockBean;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
+@Component
 public class StockService {
     private static final int NTHREADS = 20;
-    private static final Logger logger = LoggerFactory.getLogger(StockService.class);
-    public static ExecutorService stockExecutor;
-    public static ExecutorService stockDayInfoExecutor;
-    public static ExecutorService stockTimeInfoExecutor;
-    public static ExecutorService stockWeekInfoExecutor;
-    public static ExecutorService stockMonthInfoExecutor;
-    private IStockDIService stockDIService;
-    private IStockTimeInfoService stockTimeInfoService;
-    private IStockDayInfoService stockDayInfoService;
-    private IStockWeekInfoService stockWeekInfoService;
-    private IStockMonthInfoService stockMonthInfoService;
-    private StockTaskTypeEnum taskType;
-
-    public StockService() {
-
-    }
-
-    public StockService(IStockDIService stockDIService) {
-        stockExecutor = Executors.newFixedThreadPool(NTHREADS);
-        this.stockDIService = stockDIService;
-        taskType = StockTaskTypeEnum.STOCK;
-    }
-
-    public StockService(IStockDIService stockDIService, IStockTimeInfoService stockTimeInfoService) {
-        stockTimeInfoExecutor = Executors.newFixedThreadPool(NTHREADS);
-        this.stockDIService = stockDIService;
-        this.stockTimeInfoService = stockTimeInfoService;
-        taskType = StockTaskTypeEnum.TIME;
-    }
-
-    public StockService(IStockDIService stockDIService, IStockDayInfoService stockDayInfoService) {
-        stockDayInfoExecutor = Executors.newFixedThreadPool(NTHREADS);
-        this.stockDIService = stockDIService;
-        this.stockDayInfoService = stockDayInfoService;
-        taskType = StockTaskTypeEnum.DAY;
-    }
-
-    public StockService(IStockDayInfoService stockDayInfoService, IStockWeekInfoService stockWeekInfoService) {
-        stockWeekInfoExecutor = Executors.newFixedThreadPool(NTHREADS);
-        this.stockDayInfoService = stockDayInfoService;
-        this.stockWeekInfoService = stockWeekInfoService;
-        taskType = StockTaskTypeEnum.WEEK;
-    }
-
-    public StockService(IStockDayInfoService stockDayInfoService, IStockMonthInfoService stockMonthInfoService) {
-        stockMonthInfoExecutor = Executors.newFixedThreadPool(NTHREADS);
-        this.stockDayInfoService = stockDayInfoService;
-        this.stockMonthInfoService = stockMonthInfoService;
-        taskType = StockTaskTypeEnum.MONTH;
-    }
+    public static ExecutorService stockExecutor = Executors.newFixedThreadPool(NTHREADS);
+    public static ExecutorService stockDayInfoExecutor = Executors.newFixedThreadPool(NTHREADS);
+    public static ExecutorService stockTimeInfoExecutor = Executors.newFixedThreadPool(NTHREADS);
+    public static ExecutorService stockWeekInfoExecutor = Executors.newFixedThreadPool(NTHREADS);
+    public static ExecutorService stockMonthInfoExecutor = Executors.newFixedThreadPool(NTHREADS);
+    @Resource
+    IStockDIService stockDIService;
+    @Resource
+    IStockTimeInfoService stockTimeInfoService;
+    @Resource
+    IStockDayInfoService stockDayInfoService;
+    @Resource
+    IStockWeekInfoService stockWeekInfoService;
+    @Resource
+    IStockMonthInfoService stockMonthInfoService;
+    @Resource
+    IEchnicalaspectService echnicalaspectService;
+    @Resource
+    IAbnormalaActionService abnormalaActionService;
+    @Resource
+    IStockBidService stockBidService;
 
     /**
      * 任务启动入口
      * @param stockList
      * @return
      */
-    public boolean start(List<StockBean> stockList) {
+    public boolean start(List<StockBean> stockList, StockTaskTypeEnum stockTaskTypeEnum) {
         //初始化进度数据
-        initProcessData(stockList);
+        initProcessData(stockList, stockTaskTypeEnum);
 
 
         for (StockBean stockBean : stockList) {
-            stockUpdateTask(stockBean);
+            stockUpdateTask(stockBean, stockTaskTypeEnum);
         }
         return true;
     }
 
     /**
      * 任务停止入口
-     * @param taskType
+     * @param
      * @return
      * @throws InterruptedException
      */
-    public boolean stop(int taskType) throws InterruptedException {
-        if (taskType == StockTaskTypeEnum.STOCK.getTypeCode()) {
+    public boolean stop(StockTaskTypeEnum stockTaskTypeEnum) throws InterruptedException {
+        if (stockTaskTypeEnum == StockTaskTypeEnum.STOCK) {
             if (stockExecutor != null && stockExecutor.isShutdown()) {
                 return false;
             }
             stockExecutor.shutdown();
             stockExecutor.awaitTermination(3, TimeUnit.SECONDS);
-        } else if (taskType == StockTaskTypeEnum.TIME.getTypeCode()) {
+        } else if (stockTaskTypeEnum == StockTaskTypeEnum.TIME) {
             if (stockTimeInfoExecutor != null && stockTimeInfoExecutor.isShutdown()) {
                 return false;
             }
             stockTimeInfoExecutor.shutdown();
             stockTimeInfoExecutor.awaitTermination(3, TimeUnit.SECONDS);
-        } else if (taskType == StockTaskTypeEnum.DAY.getTypeCode()) {
+        } else if (stockTaskTypeEnum == StockTaskTypeEnum.DAY) {
             if (stockDayInfoExecutor != null && stockDayInfoExecutor.isShutdown()) {
                 return false;
             }
             stockDayInfoExecutor.shutdown();
             stockDayInfoExecutor.awaitTermination(3, TimeUnit.SECONDS);
-        } else if (taskType == StockTaskTypeEnum.WEEK.getTypeCode()) {
+        } else if (stockTaskTypeEnum == StockTaskTypeEnum.WEEK) {
             if (stockWeekInfoExecutor != null && stockWeekInfoExecutor.isShutdown()) {
                 return false;
             }
             stockWeekInfoExecutor.shutdown();
             stockWeekInfoExecutor.awaitTermination(3, TimeUnit.SECONDS);
-        } else if (taskType == StockTaskTypeEnum.MONTH.getTypeCode()) {
+        } else if (stockTaskTypeEnum == StockTaskTypeEnum.MONTH) {
             if (stockMonthInfoExecutor != null && stockMonthInfoExecutor.isShutdown()) {
                 return false;
             }
@@ -121,35 +95,55 @@ public class StockService {
         return true;
     }
 
-    public void initProcessData(List<StockBean> stockList) {
-        if (taskType == StockTaskTypeEnum.STOCK) {
+    public void initProcessData(List<StockBean> stockList, StockTaskTypeEnum stockTaskTypeEnum) {
+        if (stockTaskTypeEnum == StockTaskTypeEnum.STOCK) {
             StockRunnable.totalCount = stockList.size();
             StockRunnable.updateCount = 0;
-        } else if (taskType == StockTaskTypeEnum.TIME) {
+        } else if (stockTaskTypeEnum == StockTaskTypeEnum.TIME) {
             StockTimeInfoRunnable.totalCount = stockList.size();
             StockTimeInfoRunnable.updateCount = 0;
-        } else if (taskType == StockTaskTypeEnum.DAY) {
+        } else if (stockTaskTypeEnum == StockTaskTypeEnum.DAY) {
             StockDayInfoRunnable.totalCount = stockList.size();
             StockDayInfoRunnable.updateCount = 0;
-        } else if (taskType == StockTaskTypeEnum.WEEK) {
+        } else if (stockTaskTypeEnum == StockTaskTypeEnum.WEEK) {
             StockWeekInfoRunnable.totalCount = stockList.size();
             StockWeekInfoRunnable.updateCount = 0;
-        } else if (taskType == StockTaskTypeEnum.MONTH) {
+        } else if (stockTaskTypeEnum == StockTaskTypeEnum.MONTH) {
             StockMonthInfoRunnable.totalCount = stockList.size();
             StockMonthInfoRunnable.updateCount = 0;
         }
     }
 
-    public void stockUpdateTask(StockBean stockBean) {
-        if (taskType == StockTaskTypeEnum.STOCK) {
+    public void stockUpdateTask(StockBean stockBean, StockTaskTypeEnum stockTaskTypeEnum) {
+        if (stockTaskTypeEnum == StockTaskTypeEnum.STOCK) {
+            if (stockExecutor.isShutdown()) {
+                log.info("股票列表线程池被关闭，重新初始化线程池");
+                stockExecutor = Executors.newFixedThreadPool(NTHREADS);
+            }
             stockExecutor.execute(new StockRunnable(stockBean, stockDIService));
-        } else if (taskType == StockTaskTypeEnum.TIME) {
-            stockTimeInfoExecutor.execute(new StockTimeInfoRunnable(stockBean, stockDIService, stockTimeInfoService));
-        } else if (taskType == StockTaskTypeEnum.DAY) {
-            stockDayInfoExecutor.execute(new StockDayInfoRunnable(stockBean, stockDayInfoService, stockDIService));
-        } else if (taskType == StockTaskTypeEnum.WEEK) {
+        } else if (stockTaskTypeEnum == StockTaskTypeEnum.TIME) {
+            if (stockTimeInfoExecutor.isShutdown()) {
+                log.info("时间线线程池被关闭，重新初始化线程池");
+                stockTimeInfoExecutor = Executors.newFixedThreadPool(NTHREADS);
+            }
+            stockTimeInfoExecutor.execute(new StockTimeInfoRunnable(stockBean, stockDIService, stockTimeInfoService, abnormalaActionService, stockBidService));
+        } else if (stockTaskTypeEnum == StockTaskTypeEnum.DAY) {
+            if (stockDayInfoExecutor.isShutdown()) {
+                log.info("日线线程池被关闭，重新初始化线程池");
+                stockDayInfoExecutor = Executors.newFixedThreadPool(NTHREADS);
+            }
+            stockDayInfoExecutor.execute(new StockDayInfoRunnable(stockBean, stockDayInfoService, stockDIService, echnicalaspectService));
+        } else if (stockTaskTypeEnum == StockTaskTypeEnum.WEEK) {
+            if (stockWeekInfoExecutor.isShutdown()) {
+                log.info("周线线程池被关闭，重新初始化线程池");
+                stockWeekInfoExecutor = Executors.newFixedThreadPool(NTHREADS);
+            }
             stockWeekInfoExecutor.execute(new StockWeekInfoRunnable(stockBean, stockWeekInfoService, stockDayInfoService));
-        } else if (taskType == StockTaskTypeEnum.MONTH) {
+        } else if (stockTaskTypeEnum == StockTaskTypeEnum.MONTH) {
+            if (stockMonthInfoExecutor.isShutdown()) {
+                log.info("月线线程池被关闭，重新初始化线程池");
+                stockMonthInfoExecutor = Executors.newFixedThreadPool(NTHREADS);
+            }
             stockMonthInfoExecutor.execute(new StockMonthInfoRunnable(stockBean, stockMonthInfoService, stockDayInfoService));
         }
     }

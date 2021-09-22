@@ -134,7 +134,8 @@ public class ProxyHttpRequest {
         }
         if (!isRequestSuccess
                 || doc.text().indexOf("Welcome To Zscaler Directory Authentication") != -1
-                || doc.text().indexOf("ACCESS DENIED") != -1) {
+                || doc.text().indexOf("ACCESS DENIED") != -1
+                || doc.text().indexOf("If you have the access code") != -1) {
             return sendGet(url, param);
         }
 

@@ -2,6 +2,7 @@ package com.qiwenshare.stock.executor;
 
 import com.alibaba.fastjson.JSON;
 import com.qiwenshare.common.util.DateUtil;
+import com.qiwenshare.stock.api.IEchnicalaspectService;
 import com.qiwenshare.stock.api.IStockDIService;
 import com.qiwenshare.stock.api.IStockDayInfoService;
 import com.qiwenshare.stock.common.TaskProcess;
@@ -23,13 +24,21 @@ public class StockDayInfoRunnable implements Runnable {
     public static volatile int updateCount = 0;
     public static int totalCount = 0;
     public StockBean stockBean;
+
     IStockDIService stockDIService;
+
     IStockDayInfoService stockDayInfoService;
 
-    public StockDayInfoRunnable(StockBean stockBean, IStockDayInfoService stockDayInfoService, IStockDIService stockDIService) {
+    IEchnicalaspectService echnicalaspectService;
+
+    public StockDayInfoRunnable(StockBean stockBean,
+                                IStockDayInfoService stockDayInfoService,
+                                IStockDIService stockDIService,
+                                IEchnicalaspectService echnicalaspectService) {
         this.stockBean = stockBean;
         this.stockDIService = stockDIService;
         this.stockDayInfoService = stockDayInfoService;
+        this.echnicalaspectService = echnicalaspectService;
     }
 
     @Override
@@ -63,10 +72,10 @@ public class StockDayInfoRunnable implements Runnable {
                 updateCount++;
             }
             try {
-                EchnicalaspectBean echnicalaspectBean = stockDIService.getEchnicalaspectInfo(stockDayInfoList, stockBean);
+                EchnicalaspectBean echnicalaspectBean = echnicalaspectService.getEchnicalaspectInfo(stockDayInfoList, stockBean);
                 StockBean stockInfo = stockDIService.getStockInfo(stockBean, stockDayInfoList);
                 logger.error("stockInfo：{}", JSON.toJSONString(stockInfo));
-                stockDIService.updateEchnicalaspect(echnicalaspectBean);
+                echnicalaspectService.updateEchnicalaspect(echnicalaspectBean);
                 stockDIService.updateStock(stockInfo);
                 stockDayInfoService.insertStockDayInfo(stockBean, stockDayInfoList);
             } catch (Exception e) {

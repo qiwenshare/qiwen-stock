@@ -1,13 +1,19 @@
 package com.qiwenshare.stock.domain;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
 import javax.persistence.*;
 import java.sql.Date;
 
 @Entity
 @Table(name = "replay")
+@TableName("replay")
 public class ReplayBean {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @TableId(type = IdType.AUTO)
     private long replayid;
     @Column
     private long stockid;

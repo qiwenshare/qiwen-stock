@@ -1,5 +1,9 @@
 package com.qiwenshare.stock.domain;
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
 import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Time;
@@ -11,10 +15,11 @@ import java.sql.Time;
 @Table(name = "abnormalaction")
 //        , uniqueConstraints = {
 //        @UniqueConstraint(name = "dateindex", columnNames = {"date","time"})
-//})
+@TableName("abnormalaction")
 public class AbnormalactionBean {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @TableId(type = IdType.AUTO)
     private long abnormalactionid;
     @Column
     private long stockid;

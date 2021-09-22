@@ -1,10 +1,15 @@
 package com.qiwenshare.stock.domain;
 
 
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "echnicalaspect")
+@TableName("echnicalaspect")
 public class EchnicalaspectBean {
     /**
      * 序列id
@@ -13,6 +18,7 @@ public class EchnicalaspectBean {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @TableId(type = IdType.AUTO)
     private int id;
     @Column
     private long stockid;
