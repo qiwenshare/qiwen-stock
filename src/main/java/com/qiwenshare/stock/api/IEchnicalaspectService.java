@@ -3,7 +3,6 @@ package com.qiwenshare.stock.api;
 import com.qiwenshare.stock.domain.EchnicalaspectBean;
 import com.qiwenshare.stock.domain.StockBean;
 import com.qiwenshare.stock.domain.StockDayInfo;
-import com.qiwenshare.stock.domain.StockOptionalBean;
 
 import java.util.List;
 
@@ -16,7 +15,7 @@ public interface IEchnicalaspectService {
 
     void updateEchnicalaspect(EchnicalaspectBean echnicalaspectBean);
 
-    EchnicalaspectBean getEchnicalaspectBean(long stockid);
+    EchnicalaspectBean getEchnicalaspectBean(String stockNum);
 
 
 }

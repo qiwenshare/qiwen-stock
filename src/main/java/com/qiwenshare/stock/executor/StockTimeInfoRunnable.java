@@ -54,9 +54,9 @@ public class StockTimeInfoRunnable implements Runnable {
             synchronized (StockController.class) {
                 updateCount++;
             }
-            stockTimeInfoService.insertStockTimeInfo("stocktimeinfo_" + stockBean.getStocknum(), stockTimeInfoList);
+            stockTimeInfoService.insertStockTimeInfo("stocktimeinfo_" + stockBean.getStockNum(), stockTimeInfoList);
             AbnormalactionBean abnormalaction = new Abnormalaction().getAbnormalaction(stockTimeInfoList);
-            abnormalaction.setStockid(stockBean.getStockid());
+            abnormalaction.setStockNum(stockBean.getStockNum());
             stockBidService.updateStockBid(stockBidBean);
             abnormalaActionService.updateAbnormalaAction(abnormalaction);
 
@@ -66,7 +66,7 @@ public class StockTimeInfoRunnable implements Runnable {
             taskProcess.setTaskName("更新分时线任务");
             taskProcess.setCompleteCount(updateCount);
             taskProcess.setTotalCount(totalCount);
-            taskProcess.setTaskInfo("采集项：" + stockBean.getStocknum() + "-" + stockBean.getStockname() + ", 当前进度：" + updateCount + "/" + totalCount);
+            taskProcess.setTaskInfo("采集项：" + stockBean.getStockNum() + "-" + stockBean.getStockName() + ", 当前进度：" + updateCount + "/" + totalCount);
             taskProcess.setRunTask(totalCount != updateCount);
             StockWebsocket.pushTaskProcess(taskProcess);
 

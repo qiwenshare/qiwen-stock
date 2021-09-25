@@ -61,7 +61,7 @@ public class StockWeekInfoService implements IStockWeekInfoService {
     @Override
     public List<StockWeekInfo> getStockweekbar(String stockNum) {
         StockBean stockBean = new StockBean();
-        stockBean.setStocknum(stockNum);
+        stockBean.setStockNum(stockNum);
         stockBean.setStockTableName("stockweekinfo_" + stockNum);
         List<StockWeekInfo> result = selectStockweekListByStockNum(stockBean);
         return result;

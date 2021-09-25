@@ -8,5 +8,5 @@ public interface IAbnormalaActionService {
 
     void updateAbnormalaAction(AbnormalactionBean abnormalactionBean);
 
-    AbnormalactionBean getAbnormalactionBean(long stockid);
+    AbnormalactionBean getAbnormalactionBean(String stockNum);
 }

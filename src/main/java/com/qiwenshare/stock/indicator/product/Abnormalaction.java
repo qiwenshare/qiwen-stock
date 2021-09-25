@@ -20,21 +20,21 @@ public class Abnormalaction {
             int startTime = Integer.parseInt(stockTimeInfoList.get(i).getTime());
             for (int j = i; j < i + 10; j++) {
 
-                if (stockTimeInfoList.get(j).getUpdownrange() > heightUpdownRange) {
-                    heightUpdownRange = stockTimeInfoList.get(j).getUpdownrange();
+                if (stockTimeInfoList.get(j).getUpDownRange() > heightUpdownRange) {
+                    heightUpdownRange = stockTimeInfoList.get(j).getUpDownRange();
                     heightTime = Integer.parseInt(stockTimeInfoList.get(j).getTime());
 
                 }
-                if (stockTimeInfoList.get(j).getUpdownrange() < lowUpdownRange) {
-                    lowUpdownRange = stockTimeInfoList.get(j).getUpdownrange();
+                if (stockTimeInfoList.get(j).getUpDownRange() < lowUpdownRange) {
+                    lowUpdownRange = stockTimeInfoList.get(j).getUpDownRange();
                     lowTime = Integer.parseInt(stockTimeInfoList.get(j).getTime());
                 }
             }
             if (heightUpdownRange - lowUpdownRange > 0.02
                     && heightTime > lowTime
                     && startTime > 100000) {
-                abnormalactionBean.setIsabnormalaction(1);
-                abnormalactionBean.setUpdownrange(heightUpdownRange - lowUpdownRange);
+                abnormalactionBean.setIsAbnormalaction(1);
+                abnormalactionBean.setUpDownRange(heightUpdownRange - lowUpdownRange);
                 try {
                     abnormalactionBean.setDate(new java.sql.Date(DateUtil.getDateByFormatString( stockTimeInfoList.get(i).getDate(),"yyyyMMdd").getTime()));
                     String time = stockTimeInfoList.get(i).getTime();
@@ -52,7 +52,7 @@ public class Abnormalaction {
             }
 
         }
-        abnormalactionBean.setIsabnormalaction(0);
+        abnormalactionBean.setIsAbnormalaction(0);
         return abnormalactionBean;
     }
 }

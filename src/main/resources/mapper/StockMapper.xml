@@ -58,37 +58,37 @@
     </insert>
 
     <insert id="insertStockTimeInfo" parameterType="java.util.Map">
-        INSERT ignore ${stockTimeInfoTable} (date,time, stockcode, amount, volume,
-        price, avgprice, updownrange)
+        INSERT ignore ${stockTimeInfoTable} (date,time, stockCode, amount, volume,
+        price, avgPrice, upDownRange)
         VALUES
         <foreach collection="stocktimeinfo" item="stockTimeInfo" index="index" separator=",">
-            (#{stockTimeInfo.date}, #{stockTimeInfo.time}, #{stockTimeInfo.stockcode},
+            (#{stockTimeInfo.date}, #{stockTimeInfo.time}, #{stockTimeInfo.stockCode},
             #{stockTimeInfo.amount}, #{stockTimeInfo.volume},
-            #{stockTimeInfo.price}, #{stockTimeInfo.avgprice}
-            , #{stockTimeInfo.updownrange})
+            #{stockTimeInfo.price}, #{stockTimeInfo.avgPrice}
+            , #{stockTimeInfo.upDownRange})
         </foreach>
     </insert>
 
     <insert id="insertStockList" parameterType="java.util.List">
-        INSERT INTO stock(stocknum, stockname, LISTING_DATE, totalFlowShares, totalShares
-        , updownrange, updownrange3, updownrange5, turnoverrate, updownprices, open, close
-        , high, low, preclose)
+        INSERT INTO stock(stockNum, stockName, LISTING_DATE, totalFlowShares, totalShares
+        , upDownRange, upDownRange3, upDownRange5, turnOverrate, upDownPrices, open, close
+        , high, low, preClose)
         VALUES
         <foreach collection="list" item="stockBean" index="index" separator=",">
-            (#{stockBean.stocknum}, #{stockBean.stockname}, #{stockBean.LISTING_DATE}
-            , #{stockBean.totalFlowShares}, #{stockBean.totalShares}, #{stockBean.updownrange}
-            , #{stockBean.updownrange3}, #{stockBean.updownrange5}, #{stockBean.turnoverrate}
-            , #{stockBean.updownprices}, #{stockBean.open}, #{stockBean.close}, #{stockBean.high}
-            , #{stockBean.low}, #{stockBean.preclose})
+            (#{stockBean.stockNum}, #{stockBean.stockName}, #{stockBean.LISTING_DATE}
+            , #{stockBean.totalFlowShares}, #{stockBean.totalShares}, #{stockBean.upDownRange}
+            , #{stockBean.upDownRange3}, #{stockBean.upDownRange5}, #{stockBean.turnOverrate}
+            , #{stockBean.upDownPrices}, #{stockBean.open}, #{stockBean.close}, #{stockBean.high}
+            , #{stockBean.low}, #{stockBean.preClose})
         </foreach>
     </insert>
 
     <update id="createStockDayInfoTable">
         CREATE TABLE IF NOT EXISTS ${_parameter} (
-        `dayinfoid` bigint(20) NOT NULL AUTO_INCREMENT,
+        `dayInfoId` bigint(20) NOT NULL AUTO_INCREMENT,
         `date` date DEFAULT NULL,
-        `stockid` bigint(20) DEFAULT NULL,
-        `stockcode` varchar(50) DEFAULT NULL,
+        `stockId` bigint(20) DEFAULT NULL,
+        `stockCode` varchar(50) DEFAULT NULL,
         `open` double(10,3) DEFAULT NULL,
         `high` double(10,3) DEFAULT NULL,
         `low` double(10,3) DEFAULT NULL,
@@ -115,17 +115,17 @@
         `rsi24` double(15,5) DEFAULT NULL,
         `wr6` double(15,5) DEFAULT NULL,
         `wr10` double(15,5) DEFAULT NULL,
-        PRIMARY KEY (`dayinfoid`),
+        PRIMARY KEY (`dayInfoId`),
         UNIQUE INDEX (`date`)
         ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
     </update>
 
     <update id="createStockWeekInfoTable">
         CREATE TABLE IF NOT EXISTS ${_parameter} (
-        `weekinfoid` bigint(20) NOT NULL AUTO_INCREMENT,
+        `weekInfoId` bigint(20) NOT NULL AUTO_INCREMENT,
         `date` date DEFAULT NULL,
-        `stockid` bigint(20) DEFAULT NULL,
-        `stockcode` varchar(50) DEFAULT NULL,
+        `stockId` bigint(20) DEFAULT NULL,
+        `stockCode` varchar(50) DEFAULT NULL,
         `open` double(10,3) DEFAULT NULL,
         `high` double(10,3) DEFAULT NULL,
         `low` double(10,3) DEFAULT NULL,
@@ -151,17 +151,17 @@
         `rsi24` double(15,5) DEFAULT NULL,
         `wr6` double(15,5) DEFAULT NULL,
         `wr10` double(15,5) DEFAULT NULL,
-        PRIMARY KEY (`weekinfoid`),
+        PRIMARY KEY (`weekInfoId`),
         UNIQUE INDEX (`date`)
         ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
     </update>
 
     <update id="createStockMonthInfoTable">
         CREATE TABLE IF NOT EXISTS ${_parameter} (
-        `monthinfoid` bigint(20) NOT NULL AUTO_INCREMENT,
+        `monthInfoId` bigint(20) NOT NULL AUTO_INCREMENT,
         `date` date DEFAULT NULL,
-        `stockid` bigint(20) DEFAULT NULL,
-        `stockcode` varchar(50) DEFAULT NULL,
+        `stockId` bigint(20) DEFAULT NULL,
+        `stockCode` varchar(50) DEFAULT NULL,
         `open` double(10,3) DEFAULT NULL,
         `high` double(10,3) DEFAULT NULL,
         `low` double(10,3) DEFAULT NULL,
@@ -187,7 +187,7 @@
         `rsi24` double(15,5) DEFAULT NULL,
         `wr6` double(15,5) DEFAULT NULL,
         `wr10` double(15,5) DEFAULT NULL,
-        PRIMARY KEY (`monthinfoid`),
+        PRIMARY KEY (`monthInfoId`),
         UNIQUE INDEX (`date`)
         ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
     </update>
@@ -195,36 +195,36 @@
 
     <update id="createStockTimeInfoTable">
         CREATE TABLE IF NOT EXISTS ${_parameter} (
-        `timeinfoid` bigint(20) NOT NULL AUTO_INCREMENT,
+        `timeInfoId` bigint(20) NOT NULL AUTO_INCREMENT,
         `date` date DEFAULT NULL,
-        `stockid` bigint(20) DEFAULT NULL,
-        `stockcode` varchar(50) DEFAULT NULL,
+        `stockId` bigint(20) DEFAULT NULL,
+        `stockCode` varchar(50) DEFAULT NULL,
         `price` double(10,3) DEFAULT NULL,
         `time` time DEFAULT NULL,
-        `avgprice` double(10,3) DEFAULT NULL,
+        `avgPrice` double(10,3) DEFAULT NULL,
         `volume` double(15,0) DEFAULT NULL,
         `amount` double(15,0) DEFAULT NULL,
-        `updownrange` double(5,4) DEFAULT NULL,
-        PRIMARY KEY (`timeinfoid`),
+        `upDownRange` double(5,4) DEFAULT NULL,
+        PRIMARY KEY (`timeInfoId`),
         UNIQUE INDEX (`date`, `time`)
         ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
     </update>
 
     <resultMap id="stockMap" type="com.qiwenshare.stock.domain.StockBean">
-        <id property="stockid" column="stockid"></id>
-        <result property="stocknum" column="stocknum"></result>
-        <result property="stockname" column="stockname"></result>
+        <id property="stockId" column="stockId"></id>
+        <result property="stockNum" column="stockNum"></result>
+        <result property="stockName" column="stockName"></result>
         <result property="COMPANY_ABBR" column="COMPANY_ABBR"></result>
         <result property="COMPANY_CODE" column="COMPANY_CODE"></result>
         <result property="NUM" column="NUM"></result>
         <result property="LISTING_DATE" column="LISTING_DATE"></result>
         <result property="totalFlowShares" column="totalFlowShares"></result>
         <result property="totalShares" column="totalShares"></result>
-        <result property="updownrange" column="updownrange"></result>
-        <result property="updownrange3" column="updownrange3"></result>
-        <result property="updownrange5" column="updownrange5"></result>
-        <result property="turnoverrate" column="turnoverrate"></result>
-        <result property="updownprices" column="updownprices"></result>
+        <result property="upDownRange" column="upDownRange"></result>
+        <result property="upDownRange3" column="upDownRange3"></result>
+        <result property="upDownRange5" column="upDownRange5"></result>
+        <result property="turnOverrate" column="turnOverrate"></result>
+        <result property="upDownPrices" column="upDownPrices"></result>
         <result property="open" column="open"></result>
         <result property="close" column="close"></result>
         <result property="high" column="high"></result>
@@ -238,28 +238,24 @@
     <select id="selectStockList" resultMap="stockMap">
         select * from stock
         <if test="key != null">
-            where stockname LIKE '%${key}%'
+            where stockName LIKE '%${key}%'
         </if>
-        <choose>
-            <when test="field != null and order != null">
-                order by ${field} ${order}
-            </when>
-            <otherwise>
-                order by stock.stockid asc
-            </otherwise>
-        </choose>
-        <if test="beginCount != null or limit != null">
-            limit #{beginCount}, #{limit}
+        order by stockId asc
+        <if test="beginCount != null or pageCount != null">
+            limit #{beginCount}, #{pageCount}
         </if>
     </select>
 
     <select id="getStockInfoById" resultType="com.qiwenshare.stock.domain.StockBean">
-        select * from stock where stocknum = #{stockid}
+        select * from stock where stockNum = #{stockId}
     </select>
 
-    <select id="getStockCountBySelect" resultType="int">
+    <select id="getStockCount" resultType="int">
         select count(*) from stock
-        where stocknum LIKE '%${key}%'
+        <if test="key != null">
+            where stockName LIKE '%${key}%'
+        </if>
+        order by stockId asc
     </select>
     <select id="selectStockDayInfoList" parameterType="String" resultType="com.qiwenshare.stock.domain.StockDayInfo">
         SELECT * FROM ${stockTableName} order by date asc
@@ -282,7 +278,7 @@
     <select id="getStockDayInfoBySelect" resultType="com.qiwenshare.stock.domain.StockDayInfo">
         SELECT * FROM stockdayinfo
         <if test="key != null">
-            where stockid = ${key}
+            where stockId = ${key}
         </if>
 
         <choose>
@@ -290,7 +286,7 @@
                 order by ${sortField} ${sortOrder}
             </when>
             <otherwise>
-                order by stockid asc
+                order by stockId asc
             </otherwise>
         </choose>
         limit #{beginCount}, #{limit}
@@ -299,7 +295,7 @@
     <select id="getStockDayInfoCountBySelect" resultType="int">
         SELECT count(*) FROM stockdayinfo
         <if test="key != null">
-            where stockid = ${key}
+            where stockId = ${key}
         </if>
     </select>
 

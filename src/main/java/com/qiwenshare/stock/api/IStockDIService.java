@@ -1,26 +1,26 @@
 package com.qiwenshare.stock.api;
 
-import com.qiwenshare.stock.common.TableQueryBean;
-import com.qiwenshare.stock.domain.*;
+import com.qiwenshare.stock.domain.StockBean;
+import com.qiwenshare.stock.domain.StockDayInfo;
 
 import java.util.List;
 
 public interface IStockDIService {
 
-    List<StockBean> selectStockBeanList(String key);
+//    List<StockBean> selectStockBeanList(String key);
 
     //mapper
     void insertStockList(List<StockBean> stockBeanList);
 
-    public void createStockInfoTable(String stocknum);
+    public void createStockInfoTable(String stockNum);
 
     public void initStockTable();
 
-    List<StockBean> selectStockList(TableQueryBean miniuiTableQueryBean);
+    List<StockBean> selectStockList(String key, Long beginCount, Long pageCount);
 
     StockBean getStockInfoById(String stockId);
 
-    int getStockCountBySelect(TableQueryBean miniuiTableQueryBean);
+    int getStockCount(String key, Long beginCount, Long pageCount);
 
     List<StockBean> selectTotalStockList();
 

@@ -45,7 +45,7 @@ public class StockTimeInfoService implements IStockTimeInfoService {
      */
     @Override
     public List<StockTimeInfo> getStockTimeInfoListByStockBean(StockBean stockBean) {
-        String url = "http://yunhq.sse.com.cn:32041/v1/sh1/line/" + stockBean.getStocknum();
+        String url = "http://yunhq.sse.com.cn:32041/v1/sh1/line/" + stockBean.getStockNum();
         //String param = "begin=0&end=-1&select=time,price,volume";
         Map<String, String> param = new HashMap<String, String>();
         param.put("begin", "0");
@@ -53,7 +53,7 @@ public class StockTimeInfoService implements IStockTimeInfoService {
         param.put("select", "time,price,volume");
         String stockTimeLineJson = new ProxyHttpRequest().sendGet(url, param);
         if (StringUtils.isEmpty(stockTimeLineJson)) {
-            log.error("stockTimeLineJson爬取数据为空：stockNum:" + stockBean.getStocknum());
+            log.error("stockTimeLineJson爬取数据为空：stockNum:" + stockBean.getStockNum());
             return null;
         }
         StockTimeLineObj stockTimeLineObj = null;
@@ -64,7 +64,7 @@ public class StockTimeInfoService implements IStockTimeInfoService {
         }
 
         if (stockTimeLineObj == null) {
-            log.error("stockTimeLineJson解析数据为空:stockNum:" + stockBean.getStocknum());
+            log.error("stockTimeLineJson解析数据为空:stockNum:" + stockBean.getStockNum());
             return null;
         }
         List<String> stockTimeLineList = JSON.parseArray(stockTimeLineObj.getLine(), String.class);
@@ -79,9 +79,9 @@ public class StockTimeInfoService implements IStockTimeInfoService {
             sumPrice += price;
             stockTimeInfo.setTime(stockParseTimeline.get(0));
             stockTimeInfo.setDate(date);
-            stockTimeInfo.setUpdownrange((price - prevClose) / prevClose);
+            stockTimeInfo.setUpDownRange((price - prevClose) / prevClose);
             stockTimeInfo.setPrice(price);
-            stockTimeInfo.setAvgprice(sumPrice / (i + 1));
+            stockTimeInfo.setAvgPrice(sumPrice / (i + 1));
             stockTimeInfo.setVolume(Double.parseDouble(stockParseTimeline.get(2)));
             stockTimeInfoList.add(stockTimeInfo);
         }

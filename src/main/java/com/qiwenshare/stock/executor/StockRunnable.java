@@ -32,12 +32,12 @@ public class StockRunnable implements Runnable {
             synchronized (StockController.class) {
                 updateCount++;
             }
-            stockDIService.createStockInfoTable(stockBean.getStocknum());
+            stockDIService.createStockInfoTable(stockBean.getStockNum());
 
 
             taskProcess.setCompleteCount(updateCount);
             taskProcess.setTotalCount(totalCount);
-            taskProcess.setTaskInfo("采集项：" + stockBean.getStocknum() + "完成进度：" + updateCount + "/" + totalCount);
+            taskProcess.setTaskInfo("采集项：" + stockBean.getStockNum() + "完成进度：" + updateCount + "/" + totalCount);
             taskProcess.setRunTask(totalCount != updateCount);
             StockWebsocket.pushTaskProcess(taskProcess);
         }

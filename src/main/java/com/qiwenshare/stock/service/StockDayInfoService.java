@@ -31,14 +31,14 @@ public class StockDayInfoService implements IStockDayInfoService {
     @Override
     public List<StockDayInfo> getStockdaybar(String stockNum) {
         StockBean stockBean = new StockBean();
-        stockBean.setStocknum(stockNum);
+        stockBean.setStockNum(stockNum);
         List<StockDayInfo> result = selectStockDayInfoList(stockBean);
         return result;
     }
 
     @Override
     public void insertStockDayInfo(StockBean stockBean, List<StockDayInfo> stockdayinfo) {
-        String stockDayInfoTable = "stockdayinfo_" + stockBean.getStocknum();
+        String stockDayInfoTable = "stockdayinfo_" + stockBean.getStockNum();
         Map<String, Object> stockDayInfoMap = new HashMap<String, Object>();
         stockDayInfoMap.put("stockDayInfoTable", stockDayInfoTable);
 
@@ -72,7 +72,7 @@ public class StockDayInfoService implements IStockDayInfoService {
 
     @Override
     public List<StockDayInfo> selectStockDayInfoList(StockBean stockBean) {
-        stockBean.setStockTableName("stockdayinfo_" + stockBean.getStocknum());
+        stockBean.setStockTableName("stockdayinfo_" + stockBean.getStockNum());
         return stockMapper.selectStockDayInfoList(stockBean);
     }
 
@@ -84,7 +84,7 @@ public class StockDayInfoService implements IStockDayInfoService {
      */
     @Override
     public List<StockDayInfo> crawlStockDayInfoListByStockBean(StockBean stockBean) {
-        String url = "http://yunhq.sse.com.cn:32041/v1/sh1/dayk/" + stockBean.getStocknum();
+        String url = "http://yunhq.sse.com.cn:32041/v1/sh1/dayk/" + stockBean.getStockNum();
         Map<String, String> param = new HashMap<String, String>();
         param.put("begin", "-1800");
         param.put("end", "-1");
@@ -98,7 +98,7 @@ public class StockDayInfoService implements IStockDayInfoService {
         }
 
         if (stockObjBean == null) {
-            System.out.println("stockObjBean空指针异常:" + stockBean.getStocknum());
+            System.out.println("stockObjBean空指针异常:" + stockBean.getStockNum());
             return null;
         }
         List<String> klineList = JSON.parseArray(stockObjBean.getKline(), String.class);
@@ -106,13 +106,13 @@ public class StockDayInfoService implements IStockDayInfoService {
         for (String kline : klineList) {
             List<String> stockParseKlineList = JSON.parseArray(kline, String.class);
             StockDayInfo stockDayInfo = new StockDayInfo();
-            stockDayInfo.setStockid(stockBean.getStockid());
+            stockDayInfo.setStockId(stockBean.getStockId());
             try {
                 stockDayInfo.setDate(new java.sql.Date(DateUtil.getDateByFormatString(stockParseKlineList.get(StockConstant.DATE),"yyyyMMdd").getTime()));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            stockDayInfo.setStockcode(stockBean.getStocknum());
+//            stockDayInfo.setStockcode(stockBean.getStockNum());
             stockDayInfo.setOpen(Double.parseDouble(stockParseKlineList.get(StockConstant.OPEN)));
             stockDayInfo.setClose(Double.parseDouble(stockParseKlineList.get(StockConstant.CLOSE)));
             stockDayInfo.setHigh(Double.parseDouble(stockParseKlineList.get(StockConstant.HIGH)));

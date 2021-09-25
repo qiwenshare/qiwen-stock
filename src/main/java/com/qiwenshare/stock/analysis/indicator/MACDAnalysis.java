@@ -258,9 +258,9 @@ public class MACDAnalysis extends IndicatorAnalysis {
         boolean isLowDivergence = lowDivergenceMap.get(currentStockDayInfo.getDate()) != null ? true : false;
 
         ReplayBean replayBean = new ReplayBean();
-        replayBean.setStockid(stockBean.getStockid());
+        replayBean.setStockNum(stockBean.getStockNum());
         replayBean.setDate(currentStockDayInfo.getDate());
-        replayBean.setCloseprice(currentStockDayInfo.getClose());
+        replayBean.setClosePrice(currentStockDayInfo.getClose());
         if ((isLowDivergence || bullMarket || upTrend || isDIFUpCrossDEA)
                 && !(isTopDivergence || bearMarket || downTrend || isDIFDownCrossDEA)) {
             StringBuffer reason = new StringBuffer();

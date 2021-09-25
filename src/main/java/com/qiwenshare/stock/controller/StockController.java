@@ -14,6 +14,7 @@ import com.qiwenshare.stock.executor.ReplayRunnable;
 import com.qiwenshare.stock.executor.StockService;
 import com.qiwenshare.stock.websocket.StockWebsocket;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -151,15 +150,14 @@ public class StockController {
     /**
      * 查询回测数据
      *
-     * @param stockid
      * @return
      */
     @Operation(summary = "查询回测数据")
     @RequestMapping("/selectreplaylist")
     @ResponseBody
-    public String selectReplayList(int stockid) {
+    public String selectReplayList(String stockNum) {
         TableData<List<ReplayBean>> miniuiTableData = new TableData<List<ReplayBean>>();
-        List<ReplayBean> replayBeanList = replayService.selectReplayList(stockid);
+        List<ReplayBean> replayBeanList = replayService.selectReplayList(stockNum);
 
         miniuiTableData.setData(replayBeanList);
         miniuiTableData.setSuccess(true);
@@ -195,11 +193,11 @@ public class StockController {
     @Operation(summary = "数据回测")
     @RequestMapping("/backtest")
     @ResponseBody
-    public String backTest(StockBean stockBean) {
+    public String backTest(@RequestBody StockBean stockBean) {
         RestResult<String> restResult = new RestResult<String>();
-        List<StockDayInfo> stockDayInfoList = stockDayInfoService.getStockdaybar(stockBean.getStocknum());
+        List<StockDayInfo> stockDayInfoList = stockDayInfoService.getStockdaybar(stockBean.getStockNum());
         Collections.reverse(stockDayInfoList);
-        replayService.deleteReplay(stockBean.getStockid());
+        replayService.deleteReplay(stockBean.getStockNum());
         List<ReplayBean> replayList = new ReplayOperation().getReplayInfo(stockDayInfoList, stockBean);
         replayService.insertReplay(replayList);
         restResult.setSuccess(true);
@@ -246,8 +244,8 @@ public class StockController {
         List<StockBean> stockBeanList = new ArrayList<StockBean>();
         for (int i = 0; i < jsonArr.size(); i++) {
             StockBean stockStr = jsonArr.get(i);
-            stockStr.setStocknum(stockStr.getCOMPANY_CODE());
-            stockStr.setStockname(stockStr.getCOMPANY_ABBR());
+            stockStr.setStockNum(stockStr.getCOMPANY_CODE());
+            stockStr.setStockName(stockStr.getCOMPANY_ABBR());
             stockBeanList.add(stockStr);
         }
 
@@ -255,8 +253,8 @@ public class StockController {
         for (int i = 0; i < stockBeanList.size(); i++) {
             StockBean stockBean = new StockBean();
             if (!stockList.contains(stockBeanList.get(i))) {
-                stockBean.setStocknum(stockBeanList.get(i).getStocknum());
-                stockBean.setStockname(stockBeanList.get(i).getStockname());
+                stockBean.setStockNum(stockBeanList.get(i).getStockNum());
+                stockBean.setStockName(stockBeanList.get(i).getStockName());
                 stockBeanList1.add(stockBean);
             }
         }
@@ -312,15 +310,27 @@ public class StockController {
     @Operation(summary = "获取股票列表")
     @RequestMapping("/getstocklist")
     @ResponseBody
-    public String getStockList(TableQueryBean tableQueryBean) {
-        TableData<List<StockBean>> miniuiTableData = new TableData<List<StockBean>>();
-        List<StockBean> stockList = stockDIService.selectStockList(tableQueryBean);
-        int StockCount = stockDIService.getStockCountBySelect(tableQueryBean);
-        miniuiTableData.setData(stockList);
-        miniuiTableData.setSuccess(true);
-        miniuiTableData.setCount(StockCount);
+    public RestResult getStockList(@Parameter(description = "当前页", required = false) long currentPage,
+                               @Parameter(description = "页面数量", required = false) long pageCount,
+                               @Parameter(description = "关键词", required = false) String key) {
 
-        return JSON.toJSONString(miniuiTableData);
+        List<StockBean> stockList = null;
+        int stockCount;
+        if (currentPage == 0 || pageCount == 0) {
+            stockCount = stockDIService.getStockCount(key, 0L, 10L);
+            stockList = stockDIService.selectStockList(key, 0L, 10L);
+
+        } else {
+            long beginCount = (currentPage - 1) * pageCount;
+
+            stockCount = stockDIService.getStockCount(key, beginCount, pageCount);
+            stockList = stockDIService.selectStockList(key, beginCount, pageCount);
+        }
+
+        Map<String, Object> map = new HashMap<>();
+        map.put("total", stockCount);
+        map.put("list", stockList);
+        return RestResult.success().data(map);
     }
 
     /**
@@ -331,8 +341,8 @@ public class StockController {
     @Operation(summary = "获取技术面结果")
     @RequestMapping("/getechnicalaspect")
     @ResponseBody
-    public String getEchnicalaspect(int stockid) {
-        EchnicalaspectBean echnicalaspectBean = echnicalaspectService.getEchnicalaspectBean(stockid);
+    public String getEchnicalaspect(String stockNum) {
+        EchnicalaspectBean echnicalaspectBean = echnicalaspectService.getEchnicalaspectBean(stockNum);
 
         return JSON.toJSONString(echnicalaspectBean);
     }
@@ -345,8 +355,8 @@ public class StockController {
     @Operation(summary = "获取异动")
     @RequestMapping("/getabnormalaction")
     @ResponseBody
-    public String getAbnormalaction(int stockid) {
-        AbnormalactionBean abnormalactionBean = abnormalaActionService.getAbnormalactionBean(stockid);
+    public String getAbnormalaction(String stockNum) {
+        AbnormalactionBean abnormalactionBean = abnormalaActionService.getAbnormalactionBean(stockNum);
 
         return JSON.toJSONString(abnormalactionBean);
     }
@@ -503,23 +513,6 @@ public class StockController {
 
         System.out.println("停止成功！");
 
-        restResult.setSuccess(true);
-        return JSON.toJSONString(restResult);
-    }
-
-    /**
-     * 通过过滤条件查询股票信息
-     *
-     * @return 返回结果
-     */
-    @Operation(summary = "通过过滤条件查询股票信息")
-    @RequestMapping("/querystockbyfilter")
-    @ResponseBody
-    public String queryStockByFilter(String filter) {
-        RestResult<List<StockBean>> restResult = new RestResult<List<StockBean>>();
-
-        List<StockBean> stockBean = stockDIService.selectStockBeanList(filter);
-        restResult.setData(stockBean);
         restResult.setSuccess(true);
         return JSON.toJSONString(restResult);
     }

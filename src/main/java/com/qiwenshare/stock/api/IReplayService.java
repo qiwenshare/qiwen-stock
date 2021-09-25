@@ -9,9 +9,9 @@ public interface IReplayService {
 
     void insertReplay(List<ReplayBean> replayBeanList);
 
-    void deleteReplay(long stockid);
+    void deleteReplay(String stockNum);
 
-    List<ReplayBean> selectReplayList(long stockid);
+    List<ReplayBean> selectReplayList(String stockNum);
 
     List<ReplayBean> selectAllReplayList(long beginCount, long pageCount);
 }
