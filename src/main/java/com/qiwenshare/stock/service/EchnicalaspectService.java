@@ -26,9 +26,9 @@ public class EchnicalaspectService implements IEchnicalaspectService {
     EchnicalaspectMapper echnicalaspectMapper;
 
     @Override
-    public EchnicalaspectBean getEchnicalaspectBean(long stockid) {
+    public EchnicalaspectBean getEchnicalaspectBean(String stockNum) {
         LambdaQueryWrapper<EchnicalaspectBean> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(EchnicalaspectBean::getStockid, stockid);
+        lambdaQueryWrapper.eq(EchnicalaspectBean::getStockNum, stockNum);
         List<EchnicalaspectBean> list = echnicalaspectMapper.selectList(lambdaQueryWrapper);
         return list.get(0);
     }
@@ -36,7 +36,7 @@ public class EchnicalaspectService implements IEchnicalaspectService {
     @Override
     public void updateEchnicalaspect(EchnicalaspectBean echnicalaspectBean) {
         LambdaUpdateWrapper<EchnicalaspectBean> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        lambdaUpdateWrapper.eq(EchnicalaspectBean::getStockid, echnicalaspectBean.getStockid());
+        lambdaUpdateWrapper.eq(EchnicalaspectBean::getStockNum, echnicalaspectBean.getStockNum());
         echnicalaspectMapper.update(echnicalaspectBean, lambdaUpdateWrapper);
     }
 
@@ -73,23 +73,23 @@ public class EchnicalaspectService implements IEchnicalaspectService {
 
         String currentTime = DateUtil.getCurrentTime();
         EchnicalaspectBean echnicalaspectBean = new EchnicalaspectBean();
-        echnicalaspectBean.setStockid(stockBean.getStockid());
-        echnicalaspectBean.setUpdatedate(currentTime);
-        echnicalaspectBean.setGoldencross(isGoldenCross ? 1 : 0);
-        echnicalaspectBean.setDeathcross(isDeathCross ? 1 : 0);
-        echnicalaspectBean.setTechnicalreturn(isTechnicalreturn ? 1 : 0);
-        echnicalaspectBean.setOverbought(isOverBought ? 1 : 0);
-        echnicalaspectBean.setOversold(isOverSold ? 1 : 0);
-        echnicalaspectBean.setKdjgoldencross(isKdjGoldencross ? 1 : 0);
-        echnicalaspectBean.setKdjdeathcross(isKdjdeathcross ? 1 : 0);
-        echnicalaspectBean.setShortupwardtrend(isShortUpwardTrend ? 1 : 0);
-        echnicalaspectBean.setShortdownwardtrend(isShortDownwardTrend ? 1 : 0);
+        echnicalaspectBean.setStockNum(stockBean.getStockNum());
+        echnicalaspectBean.setUpdateDate(currentTime);
+        echnicalaspectBean.setGoldenCross(isGoldenCross ? 1 : 0);
+        echnicalaspectBean.setDeathCross(isDeathCross ? 1 : 0);
+        echnicalaspectBean.setTechnicalReturn(isTechnicalreturn ? 1 : 0);
+        echnicalaspectBean.setOverBought(isOverBought ? 1 : 0);
+        echnicalaspectBean.setOverSold(isOverSold ? 1 : 0);
+        echnicalaspectBean.setKdjGoldenCross(isKdjGoldencross ? 1 : 0);
+        echnicalaspectBean.setKdjDeathCross(isKdjdeathcross ? 1 : 0);
+        echnicalaspectBean.setShortUpwardTrend(isShortUpwardTrend ? 1 : 0);
+        echnicalaspectBean.setShortDownwardTrend(isShortDownwardTrend ? 1 : 0);
         echnicalaspectBean.setBullMarket(isBullMarket ? 1 : 0);
         echnicalaspectBean.setBearMarket(isBearMarket ? 1 : 0);
-        echnicalaspectBean.setUptrend(isUpTrend ? 1 : 0);
-        echnicalaspectBean.setDowntrend(isDownTrend ? 1 : 0);
-        echnicalaspectBean.setProsperitylevel(prosperityLevel);
-        echnicalaspectBean.setCattlestart(replayBean.getBought());
+        echnicalaspectBean.setUpTrend(isUpTrend ? 1 : 0);
+        echnicalaspectBean.setDownTrend(isDownTrend ? 1 : 0);
+        echnicalaspectBean.setProsperityLevel(prosperityLevel);
+        echnicalaspectBean.setCattleStart(replayBean.getBought());
 
         return echnicalaspectBean;
     }

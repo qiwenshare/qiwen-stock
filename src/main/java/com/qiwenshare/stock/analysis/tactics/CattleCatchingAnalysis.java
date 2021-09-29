@@ -14,7 +14,7 @@ public class CattleCatchingAnalysis extends TacticsAnalysis {
 
     @Override
     public ReplayBean getOperation(List<StockDayInfo> stockDayInfoList, StockBean stockBean) {
-        //LOGGER.info("----------股票编号："+ stockBean.getStocknum());
+        //LOGGER.info("----------股票编号："+ stockBean.getStockNum());
         //1、首次放量涨停
         //2、均线呈现发散趋势
         //3、流通市值适中
@@ -27,7 +27,7 @@ public class CattleCatchingAnalysis extends TacticsAnalysis {
         double preClosePrise = preStockDayInfo.getClose();
         double currentVolumn = stockDayInfo.getVolume();
         double preVolumn = preStockDayInfo.getVolume();
-        double updownrange = (currentClosePrise - preClosePrise) / preClosePrise;
+        double upDownRange = (currentClosePrise - preClosePrise) / preClosePrise;
         double ma120 = stockDayInfo.getMa120();
         ReplayBean replayBean = new ReplayBean();
 
@@ -52,8 +52,8 @@ public class CattleCatchingAnalysis extends TacticsAnalysis {
             }
         }
 
-        if (updownrange > 0.099
-                && updownrange < 0.11
+        if (upDownRange > 0.099
+                && upDownRange < 0.11
                 && currentVolumn / preVolumn > 2
                 && currentVolumn / preVolumn < 5
                 && currentClosePrise > ma120 && preClosePrise < ma120) {

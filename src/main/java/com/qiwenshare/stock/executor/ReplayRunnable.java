@@ -37,9 +37,9 @@ public class ReplayRunnable implements Runnable {
         if (!StockController.stockReplayexec.isShutdown()) {
             TaskProcess taskProcess = new TaskProcess();
 
-            List<StockDayInfo> stockDayInfoList = stockDayInfoService.getStockdaybar(stockBean.getStocknum());
+            List<StockDayInfo> stockDayInfoList = stockDayInfoService.getStockdaybar(stockBean.getStockNum());
             Collections.reverse(stockDayInfoList);
-            replayService.deleteReplay(stockBean.getStockid());
+            replayService.deleteReplay(stockBean.getStockNum());
             List<ReplayBean> replayList = new ReplayOperation().getReplayInfo(stockDayInfoList, stockBean);
             replayService.insertReplay(replayList);
             synchronized (StockController.class) {
@@ -49,7 +49,7 @@ public class ReplayRunnable implements Runnable {
 
             taskProcess.setCompleteCount(updateCount);
             taskProcess.setTotalCount(totalCount);
-            taskProcess.setTaskInfo("复盘项：" + stockBean.getStocknum() + "完成进度：" + updateCount + "/" + totalCount);
+            taskProcess.setTaskInfo("复盘项：" + stockBean.getStockNum() + "完成进度：" + updateCount + "/" + totalCount);
             taskProcess.setRunTask(totalCount != updateCount);
             StockWebsocket.pushTaskProcess(taskProcess);
         }

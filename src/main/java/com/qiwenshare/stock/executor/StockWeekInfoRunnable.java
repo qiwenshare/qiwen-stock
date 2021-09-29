@@ -30,7 +30,7 @@ public class StockWeekInfoRunnable implements Runnable {
         if (!StockService.stockWeekInfoExecutor.isShutdown()) {
             TaskProcess taskProcess = new TaskProcess();
 
-            List<StockDayInfo> stockDayInfoList = stockDayInfoService.getStockdaybar(stockBean.getStocknum());
+            List<StockDayInfo> stockDayInfoList = stockDayInfoService.getStockdaybar(stockBean.getStockNum());
             List<StockWeekInfo> stockWeekInfoList = stockWeekInfoService.getStockWeekInfoList(stockDayInfoList);
 
             if (stockWeekInfoList == null) {
@@ -43,13 +43,13 @@ public class StockWeekInfoRunnable implements Runnable {
                 updateCount++;
             }
 
-            stockWeekInfoService.insertStockWeekInfo("stockweekinfo_" + stockBean.getStocknum(), stockWeekInfoList);
+            stockWeekInfoService.insertStockWeekInfo("stockweekinfo_" + stockBean.getStockNum(), stockWeekInfoList);
 
             taskProcess.setTaskId(2);
             taskProcess.setTaskName("更新周线任务");
             taskProcess.setCompleteCount(updateCount);
             taskProcess.setTotalCount(totalCount);
-            taskProcess.setTaskInfo("采集项：" + stockBean.getStocknum() + "-" + stockBean.getStockname() + ", 当前进度：" + updateCount + "/" + totalCount);
+            taskProcess.setTaskInfo("采集项：" + stockBean.getStockNum() + "-" + stockBean.getStockName() + ", 当前进度：" + updateCount + "/" + totalCount);
             taskProcess.setRunTask(totalCount != updateCount);
             StockWebsocket.pushTaskProcess(taskProcess);
         }

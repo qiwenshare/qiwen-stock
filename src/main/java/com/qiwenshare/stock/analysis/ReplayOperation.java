@@ -63,10 +63,10 @@ public class ReplayOperation {
                 }
                 replayBean.setReason(reason);
                 replayBean.setBought(1);
-                replayBean.setStockid(stockBean.getStockid());
+                replayBean.setStockNum(stockBean.getStockNum());
                 replayBean.setDate(stockDayInfoList.get(i).getDate());
                 replayBean.setStatusCode(indicatorReplayBean.getStatusCode());
-                replayBean.setCloseprice(stockDayInfoList.get(i).getClose());
+                replayBean.setClosePrice(stockDayInfoList.get(i).getClose());
                 replayBeanList.add(replayBean);
             }
 //

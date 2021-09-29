@@ -61,7 +61,7 @@ public class StockMonthInfoService implements IStockMonthInfoService {
     @Override
     public List<StockMonthInfo> getStockmonthbar(String stockNum) {
         StockBean stockBean = new StockBean();
-        stockBean.setStocknum(stockNum);
+        stockBean.setStockNum(stockNum);
         stockBean.setStockTableName("stockmonthinfo_" + stockNum);
         List<StockMonthInfo> result = selectStockmonthListByStockNum(stockBean);
         return result;

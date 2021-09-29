@@ -13,16 +13,16 @@ public class TurnoverRateAnalysis extends IndicatorAnalysis {
         StockDayInfo currentStockDayInfo = stockDayInfoList.get(stockDayInfoListSize);
         double currentVolume = currentStockDayInfo.getVolume();
         double currentTotalFlowShares = stockBean.getTotalFlowShares();
-        double turnoverrate = currentVolume / currentTotalFlowShares;
-        if (turnoverrate < 0.03) {
+        double turnOverrate = currentVolume / currentTotalFlowShares;
+        if (turnOverrate < 0.03) {
             //观望
-        } else if (turnoverrate < 0.07) {
+        } else if (turnOverrate < 0.07) {
             //原则观望
-        } else if (turnoverrate < 0.10) {
+        } else if (turnOverrate < 0.10) {
             //考虑买入或卖出
-        } else if (turnoverrate < 0.15) {
+        } else if (turnOverrate < 0.15) {
             //大举买入或卖出
-        } else if (turnoverrate < 0.25) {
+        } else if (turnOverrate < 0.25) {
             //短线进入或中线清仓
         } else {
             //清仓走人

@@ -21,17 +21,17 @@ public class ReplayService implements IReplayService {
     }
 
     @Override
-    public List<ReplayBean> selectReplayList(long stockid) {
+    public List<ReplayBean> selectReplayList(String stockNum) {
         LambdaQueryWrapper<ReplayBean> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(ReplayBean::getStockid, stockid);
+        lambdaQueryWrapper.eq(ReplayBean::getStockNum, stockNum);
         List<ReplayBean> replayBeanList = replayMapper.selectList(lambdaQueryWrapper);
         return replayBeanList;
     }
 
     @Override
-    public void deleteReplay(long stockid) {
+    public void deleteReplay(String stockNum) {
         LambdaQueryWrapper<ReplayBean> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(ReplayBean::getStockid, stockid);
+        lambdaQueryWrapper.eq(ReplayBean::getStockNum, stockNum);
         replayMapper.delete(lambdaQueryWrapper);
 
     }

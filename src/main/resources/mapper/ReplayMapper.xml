@@ -7,7 +7,7 @@
 <mapper namespace="com.qiwenshare.stock.mapper.ReplayMapper">
     <select id="getReplayList" resultType="com.qiwenshare.stock.domain.ReplayBean">
         select * from replay
-        left join stock b on b.stockid = a.stockid
+        left join stock b on b.stockId = a.stockId
         <if test="beginCount != null and pageCount != null">
             limit #{beginCount}, #{pageCount}
         </if>

@@ -10,12 +10,11 @@ import com.qiwenshare.stock.api.IAbnormalaActionService;
 import com.qiwenshare.stock.api.IEchnicalaspectService;
 import com.qiwenshare.stock.api.IStockBidService;
 import com.qiwenshare.stock.api.IStockDIService;
-import com.qiwenshare.stock.common.MiniuiUtil;
 import com.qiwenshare.stock.common.ProxyHttpRequest;
-import com.qiwenshare.stock.common.TableQueryBean;
 import com.qiwenshare.stock.domain.*;
 import com.qiwenshare.stock.mapper.StockBidMapper;
 import com.qiwenshare.stock.mapper.StockMapper;
+import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,11 +49,11 @@ public class StockDIService extends ServiceImpl<StockMapper, StockBean> implemen
     private EntityManagerFactory entityManagerFactory;
 
     @Override
-    public void createStockInfoTable(String stocknum) {
-        stockMapper.createStockDayInfoTable("stockdayinfo_" + stocknum);
-        stockMapper.createStockWeekInfoTable("stockweekinfo_" + stocknum);
-        stockMapper.createStockMonthInfoTable("stockmonthinfo_" + stocknum);
-        stockMapper.createStockTimeInfoTable("stocktimeinfo_" + stocknum);
+    public void createStockInfoTable(String stockNum) {
+        stockMapper.createStockDayInfoTable("stockdayinfo_" + stockNum);
+        stockMapper.createStockWeekInfoTable("stockweekinfo_" + stockNum);
+        stockMapper.createStockMonthInfoTable("stockmonthinfo_" + stockNum);
+        stockMapper.createStockTimeInfoTable("stocktimeinfo_" + stockNum);
     }
 
     @Override
@@ -62,11 +61,11 @@ public class StockDIService extends ServiceImpl<StockMapper, StockBean> implemen
         List<StockBean> stockList = stockMapper.selectTotalStockList();
 
         for (int i = 0; i < stockList.size(); i++) {
-            long stockid = stockList.get(i).getStockid();
-            System.out.println("----------stockid--" + stockid);
-            EchnicalaspectBean echnicalaspect = new EchnicalaspectBean(stockid);
-            StockBidBean stockBidBean = new StockBidBean(stockid);
-            AbnormalactionBean abnormalactionBean = new AbnormalactionBean(stockid);
+            String stockNum = stockList.get(i).getStockNum();
+            System.out.println("----------stockNum--" + stockNum);
+            EchnicalaspectBean echnicalaspect = new EchnicalaspectBean(stockNum);
+            StockBidBean stockBidBean = new StockBidBean(stockNum);
+            AbnormalactionBean abnormalactionBean = new AbnormalactionBean(stockNum);
 
             echnicalaspectService.insertEchnicalaspect(echnicalaspect);
             stockBidService.insertStockBid(stockBidBean);
@@ -85,13 +84,13 @@ public class StockDIService extends ServiceImpl<StockMapper, StockBean> implemen
                 @Override
                 public void run() {
                     try {
-                        logger.info("股票详情获取中：", stockBean.getStocknum());
-                        JSONObject stockShare = getStockShare(stockBean.getStocknum());
+                        logger.info("股票详情获取中：", stockBean.getStockNum());
+                        JSONObject stockShare = getStockShare(stockBean.getStockNum());
                         stockBean.setTotalFlowShares(stockShare.getDoubleValue("DOMESTIC_SHARES") * 10000);
                         stockBean.setTotalShares(stockShare.getDoubleValue("UNLIMITED_SHARES") * 10000);
                         stockMapper.updateById(stockBean);
                     } catch (Exception e) {
-                        logger.error("getStockShare fail:stocknum{}, errorMessage: {}", stockBean.getStocknum(), e);
+                        logger.error("getStockShare fail:stockNum{}, errorMessage: {}", stockBean.getStockNum(), e);
                     }
                 }
             });
@@ -99,19 +98,15 @@ public class StockDIService extends ServiceImpl<StockMapper, StockBean> implemen
     }
 
     @Override
-    public List<StockBean> selectStockList(TableQueryBean miniuiTableQueryBean) {
-        TableQueryBean miniuiTablePageQuery = MiniuiUtil.getMiniuiTablePageQuery(miniuiTableQueryBean);
-        return stockMapper.selectStockList(miniuiTablePageQuery);
+    public List<StockBean> selectStockList(@Param("key") String key, @Param("beginCount") Long beginCount, @Param("pageCount") Long pageCount) {
+//        TableQueryBean miniuiTablePageQuery = MiniuiUtil.getMiniuiTablePageQuery(miniuiTableQueryBean);
+        return stockMapper.selectStockList(key, beginCount, pageCount);
     }
 
-    @Override
-    public StockBean getStockInfoById(String stockId) {
-        return stockMapper.getStockInfoById(stockId);
-    }
 
     @Override
-    public int getStockCountBySelect(TableQueryBean miniuiTableQueryBean) {
-        return stockMapper.getStockCountBySelect(miniuiTableQueryBean);
+    public int getStockCount(String key, Long beginCount, Long pageCount) {
+        return stockMapper.getStockCount(key, beginCount, pageCount);
     }
 
     @Override
@@ -120,11 +115,8 @@ public class StockDIService extends ServiceImpl<StockMapper, StockBean> implemen
     }
 
     @Override
-    public List<StockBean> selectStockBeanList(String key) {
-        TableQueryBean tableQueryBean = new TableQueryBean();
-        tableQueryBean.setKey(key);
-        List<StockBean> stockBeanList = stockMapper.selectStockList(tableQueryBean);
-        return stockBeanList;
+    public StockBean getStockInfoById(String stockId) {
+        return stockMapper.getStockInfoById(stockId);
     }
 
     @Override
@@ -197,8 +189,8 @@ public class StockDIService extends ServiceImpl<StockMapper, StockBean> implemen
 
             for (int  j = 0; j < jsonArr.size(); j++) {
                 StockBean stockStr = jsonArr.get(j);
-                stockStr.setStocknum(stockStr.getCOMPANY_CODE());
-                stockStr.setStockname(stockStr.getCOMPANY_ABBR());
+                stockStr.setStockNum(stockStr.getCOMPANY_CODE());
+                stockStr.setStockName(stockStr.getCOMPANY_ABBR());
 
 
                 stockBeanList.add(stockStr);
@@ -233,17 +225,17 @@ public class StockDIService extends ServiceImpl<StockMapper, StockBean> implemen
         double preClosePrise = preStockdayinfo.getClose();
         double pre3ClosePrise = pre3Stockdayinfo.getClose();
         double pre5ClosePrise = pre5Stockdayinfo.getClose();
-        double updownrange = 0;
-        double updownrange3 = 0;
-        double updownrange5 = 0;
-        double turnoverrate = 0;
+        double upDownRange = 0;
+        double upDownRange3 = 0;
+        double upDownRange5 = 0;
+        double turnOverrate = 0;
         if (currentTotalFlowShares == 0) {
             logger.error("currentTotalFlowShares is zero, stockBean : {}", JSON.toJSONString(stockBean));
         } else {
-            turnoverrate = currentVolume / currentTotalFlowShares;
+            turnOverrate = currentVolume / currentTotalFlowShares;
         }
 
-        double updownprices = currentClosePrise - preClosePrise;
+        double upDownPrices = currentClosePrise - preClosePrise;
         Date newDate = currentStockdayinfo.getDate();
 
         double amplitude = 0;
@@ -252,7 +244,7 @@ public class StockDIService extends ServiceImpl<StockMapper, StockBean> implemen
                 logger.error("preClosePrise is zero, stockBean : {}", JSON.toJSONString(stockBean));
             } else {
                 amplitude = (currentHigh - currentLow) / preClosePrise;
-                updownrange = (currentClosePrise - preClosePrise) / preClosePrise;
+                upDownRange = (currentClosePrise - preClosePrise) / preClosePrise;
             }
 
         }
@@ -260,7 +252,7 @@ public class StockDIService extends ServiceImpl<StockMapper, StockBean> implemen
             if (pre3ClosePrise == 0) {
                 logger.error("pre3ClosePrise is zero, stockBean : {}", JSON.toJSONString(stockBean));
             } else {
-                updownrange3 = (currentClosePrise - pre3ClosePrise) / pre3ClosePrise;
+                upDownRange3 = (currentClosePrise - pre3ClosePrise) / pre3ClosePrise;
             }
 
         }
@@ -268,27 +260,27 @@ public class StockDIService extends ServiceImpl<StockMapper, StockBean> implemen
             if (pre5ClosePrise == 0) {
                 logger.error("pre5ClosePrise is zero, stockBean : {}", JSON.toJSONString(stockBean));
             } else {
-                updownrange5 = (currentClosePrise - pre5ClosePrise) / pre5ClosePrise;
+                upDownRange5 = (currentClosePrise - pre5ClosePrise) / pre5ClosePrise;
             }
 
         }
 
-        currentStockBean.setUpdownrange(updownrange);
-        currentStockBean.setUpdownrange3(updownrange3);
-        currentStockBean.setUpdownrange5(updownrange5);
-        currentStockBean.setTurnoverrate(turnoverrate);
-        currentStockBean.setUpdownprices(updownprices);
+        currentStockBean.setUpDownRange(upDownRange);
+        currentStockBean.setUpDownRange3(upDownRange3);
+        currentStockBean.setUpDownRange5(upDownRange5);
+        currentStockBean.setTurnOverrate(turnOverrate);
+        currentStockBean.setUpDownPrices(upDownPrices);
         currentStockBean.setOpen(currentStockdayinfo.getOpen());
         currentStockBean.setClose(currentStockdayinfo.getClose());
         currentStockBean.setHigh(currentStockdayinfo.getHigh());
         currentStockBean.setLow(currentStockdayinfo.getLow());
-        currentStockBean.setPreclose(preClosePrise);
+        currentStockBean.setPreClose(preClosePrise);
         currentStockBean.setVolume(currentStockdayinfo.getVolume());
         currentStockBean.setAmount(currentStockdayinfo.getAmount());
         currentStockBean.setAmplitude(amplitude);
-        currentStockBean.setTotalmarketvalue(stockBean.getTotalShares() * currentClosePrise);
-        currentStockBean.setFlowmarketvalue(stockBean.getTotalFlowShares() * currentClosePrise);
-        currentStockBean.setStockid(stockBean.getStockid());
+        currentStockBean.setTotalMarketValue(stockBean.getTotalShares() * currentClosePrise);
+        currentStockBean.setFlowMarketValue(stockBean.getTotalFlowShares() * currentClosePrise);
+        currentStockBean.setStockId(stockBean.getStockId());
         currentStockBean.setUpdateDate(newDate);
 
         return currentStockBean;

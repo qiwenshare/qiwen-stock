@@ -3,6 +3,7 @@ package com.qiwenshare.stock.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.qiwenshare.stock.common.TableQueryBean;
 import com.qiwenshare.stock.domain.*;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 import java.util.Map;
@@ -19,9 +20,9 @@ public interface StockMapper  extends BaseMapper<StockBean> {
 
     void insertStockList(List<StockBean> stockBeanList);
 
-    List<StockBean> selectStockList(TableQueryBean miniuiTableQueryBean);
+    List<StockBean> selectStockList(@Param("key") String key, @Param("beginCount") Long beginCount, @Param("pageCount") Long pageCount);
 
-    int getStockCountBySelect(TableQueryBean miniuiTableQueryBean);
+    int getStockCount(@Param("key") String key, @Param("beginCount") Long beginCount, @Param("pageCount") Long pageCount);
 
     List<StockDayInfo> selectStockDayInfoList(StockBean stockBean);
 
@@ -35,7 +36,7 @@ public interface StockMapper  extends BaseMapper<StockBean> {
 
     void createStockDayInfoTable(String stockDayInfoTableName);
 
-    StockBean getStockInfoById(String stockid);
+    StockBean getStockInfoById(String stockId);
 
     void createStockTimeInfoTable(String stockTimeInfoTableName);
 

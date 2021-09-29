@@ -3,10 +3,12 @@ package com.qiwenshare.stock.domain;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Data;
 
 import javax.persistence.*;
 import java.sql.Date;
 
+@Data
 @Entity
 @Table(name = "stock")
 @TableName("stock")
@@ -14,11 +16,11 @@ public class StockBean {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @TableId(type = IdType.AUTO)
-    private long stockid;
+    private Long stockId;
     @Column
-    private String stocknum;
+    private String stockNum;
     @Column
-    private String stockname;
+    private String stockName;
     /**
      * 表名，查询用，非实体属性
      */
@@ -42,25 +44,25 @@ public class StockBean {
      * 涨跌幅
      */
     @Column(precision = 5, scale = 4)
-    private double updownrange;
+    private double upDownRange;
 
     @Column(precision = 5, scale = 4)
-    private double updownrange3;
+    private double upDownRange3;
 
     @Column(precision = 5, scale = 4)
-    private double updownrange5;
+    private double upDownRange5;
 
     /**
      * 换手率
      */
     @Column(precision = 5, scale = 4)
-    private double turnoverrate;
+    private double turnOverrate;
 
     /**
      * 涨跌额
      */
     @Column(precision = 10, scale = 3)
-    private double updownprices;
+    private double upDownPrices;
 
     @Column(precision = 10, scale = 3)
     private double open;
@@ -75,7 +77,7 @@ public class StockBean {
     private double low;
 
     @Column(precision = 10, scale = 3)
-    private double preclose;
+    private double preClose;
 
     @Column(precision = 15)
     private double volume;
@@ -90,52 +92,14 @@ public class StockBean {
     private double amplitude;
 
     @Column(precision = 15)
-    private double totalmarketvalue;
+    private double totalMarketValue;
 
     @Column(precision = 15)
-    private double flowmarketvalue;
+    private double flowMarketValue;
 
     private Date updateDate;
 
 
-    public StockBean() {
-    }
-
-    public StockBean(int stockid) {
-        this.stockid = stockid;
-    }
-
-    public long getStockid() {
-        return stockid;
-    }
-
-    public void setStockid(long stockid) {
-        this.stockid = stockid;
-    }
-
-    public String getStocknum() {
-        return stocknum;
-    }
-
-    public void setStocknum(String stocknum) {
-        this.stocknum = stocknum;
-    }
-
-    public String getStockname() {
-        return stockname;
-    }
-
-    public void setStockname(String stockname) {
-        this.stockname = stockname;
-    }
-
-    public String getStockTableName() {
-        return stockTableName;
-    }
-
-    public void setStockTableName(String stockTableName) {
-        this.stockTableName = stockTableName;
-    }
 
     @Override
     public boolean equals(Object obj) {
@@ -146,7 +110,7 @@ public class StockBean {
         if (obj instanceof StockBean) {
             // 比较对象也是StockBean对象时，判断name和age是否都相同
             StockBean p = (StockBean) obj;
-            return stocknum.equals(p.stocknum) && stockname.equals(p.stockname);
+            return stockNum.equals(p.stockNum) && stockName.equals(p.stockName);
         }
         return false;
     }
@@ -156,179 +120,5 @@ public class StockBean {
         return super.hashCode();
     }
 
-    public String getCOMPANY_ABBR() {
-        return COMPANY_ABBR;
-    }
 
-    public void setCOMPANY_ABBR(String cOMPANY_ABBR) {
-        COMPANY_ABBR = cOMPANY_ABBR;
-    }
-
-    public String getCOMPANY_CODE() {
-        return COMPANY_CODE;
-    }
-
-    public void setCOMPANY_CODE(String cOMPANY_CODE) {
-        COMPANY_CODE = cOMPANY_CODE;
-    }
-
-    public String getLISTING_DATE() {
-        return LISTING_DATE;
-    }
-
-    public void setLISTING_DATE(String lISTING_DATE) {
-        LISTING_DATE = lISTING_DATE;
-    }
-
-    public double getTotalFlowShares() {
-        return totalFlowShares;
-    }
-
-    public void setTotalFlowShares(double totalFlowShares) {
-        this.totalFlowShares = totalFlowShares;
-    }
-
-    public double getTotalShares() {
-        return totalShares;
-    }
-
-    public void setTotalShares(double totalShares) {
-        this.totalShares = totalShares;
-    }
-
-    public double getUpdownrange() {
-        return updownrange;
-    }
-
-    public void setUpdownrange(double updownrange) {
-        this.updownrange = updownrange;
-    }
-
-    public double getUpdownrange3() {
-        return updownrange3;
-    }
-
-    public void setUpdownrange3(double updownrange3) {
-        this.updownrange3 = updownrange3;
-    }
-
-    public double getUpdownrange5() {
-        return updownrange5;
-    }
-
-    public void setUpdownrange5(double updownrange5) {
-        this.updownrange5 = updownrange5;
-    }
-
-    public double getTurnoverrate() {
-        return turnoverrate;
-    }
-
-    public void setTurnoverrate(double turnoverrate) {
-        this.turnoverrate = turnoverrate;
-    }
-
-    public double getUpdownprices() {
-        return updownprices;
-    }
-
-    public void setUpdownprices(double updownprices) {
-        this.updownprices = updownprices;
-    }
-
-    public double getOpen() {
-        return open;
-    }
-
-    public void setOpen(double open) {
-        this.open = open;
-    }
-
-    public double getClose() {
-        return close;
-    }
-
-    public void setClose(double close) {
-        this.close = close;
-    }
-
-    public double getHigh() {
-        return high;
-    }
-
-    public void setHigh(double high) {
-        this.high = high;
-    }
-
-    public double getLow() {
-        return low;
-    }
-
-    public void setLow(double low) {
-        this.low = low;
-    }
-
-    public double getPreclose() {
-        return preclose;
-    }
-
-    public void setPreclose(double preclose) {
-        this.preclose = preclose;
-    }
-
-    public double getVolume() {
-        return volume;
-    }
-
-    public void setVolume(double volume) {
-        this.volume = volume;
-    }
-
-    public double getAmount() {
-        return amount;
-    }
-
-    public void setAmount(double amount) {
-        this.amount = amount;
-    }
-
-    public double getAmplitude() {
-        return amplitude;
-    }
-
-    public void setAmplitude(double amplitude) {
-        this.amplitude = amplitude;
-    }
-
-    public double getTotalmarketvalue() {
-        return totalmarketvalue;
-    }
-
-    public void setTotalmarketvalue(double totalmarketvalue) {
-        this.totalmarketvalue = totalmarketvalue;
-    }
-
-    public double getFlowmarketvalue() {
-        return flowmarketvalue;
-    }
-
-    public void setFlowmarketvalue(double flowmarketvalue) {
-        this.flowmarketvalue = flowmarketvalue;
-    }
-
-    public Date getUpdateDate() {
-        if (updateDate == null) {
-            return null;
-        }
-        return (Date) updateDate.clone();
-    }
-
-    public void setUpdateDate(Date updateDate) {
-        if (updateDate == null) {
-            this.updateDate = null;
-        } else {
-            this.updateDate = (Date) updateDate.clone();
-        }
-
-    }
 }

@@ -17,9 +17,9 @@ public class AbnormalaActionService implements IAbnormalaActionService {
 
 
     @Override
-    public AbnormalactionBean getAbnormalactionBean(long stockid) {
+    public AbnormalactionBean getAbnormalactionBean(String stockNum) {
         LambdaQueryWrapper<AbnormalactionBean> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(AbnormalactionBean::getStockid, stockid);
+        lambdaQueryWrapper.eq(AbnormalactionBean::getStockNum, stockNum);
         List<AbnormalactionBean> list =  abnormalaActionMapper.selectList(lambdaQueryWrapper);
         return list.get(0);
     }
@@ -33,7 +33,7 @@ public class AbnormalaActionService implements IAbnormalaActionService {
     @Override
     public void updateAbnormalaAction(AbnormalactionBean abnormalactionBean) {
         LambdaUpdateWrapper<AbnormalactionBean> lambdaUpdateWrapper = new LambdaUpdateWrapper<>();
-        lambdaUpdateWrapper.eq(AbnormalactionBean::getStockid, abnormalactionBean.getStockid());
+        lambdaUpdateWrapper.eq(AbnormalactionBean::getStockNum, abnormalactionBean.getStockNum());
         abnormalaActionMapper.update(abnormalactionBean, lambdaUpdateWrapper);
     }
 }
