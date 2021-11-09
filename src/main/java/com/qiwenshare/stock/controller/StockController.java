@@ -3,9 +3,9 @@ package com.qiwenshare.stock.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.qiwenshare.common.result.RestResult;
+import com.qiwenshare.common.util.HttpsUtils;
 import com.qiwenshare.stock.analysis.ReplayOperation;
 import com.qiwenshare.stock.api.*;
-import com.qiwenshare.stock.common.HttpRequest;
 import com.qiwenshare.stock.common.TableData;
 import com.qiwenshare.stock.common.TableQueryBean;
 import com.qiwenshare.stock.constant.StockTaskTypeEnum;
@@ -16,6 +16,7 @@ import com.qiwenshare.stock.websocket.StockWebsocket;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -25,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -526,7 +528,14 @@ public class StockController {
     @RequestMapping("/getshstock")
     @ResponseBody
     public String getShStock(){
-        String result = HttpRequest.sendGet("http://yunhq.sse.com.cn:32041//v1/sh1/list/self/000001_000016_000010_000009_000300","select=code%2Cname%2Clast%2Cchg_rate%2Camount%2Copen%2Cprev_close&_=1585456053043");
+        String result = "";
+        String url = "http://yunhq.sse.com.cn:32041//v1/sh1/list/self/000001_000016_000010_000009_000300&select=code%2Cname%2Clast%2Cchg_rate%2Camount%2Copen%2Cprev_close&_=1585456053043";
+        try {
+            result = IOUtils.toString(HttpsUtils.doGet(url), "utf-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//        String result = HttpRequest.sendGet("http://yunhq.sse.com.cn:32041//v1/sh1/list/self/000001_000016_000010_000009_000300","select=code%2Cname%2Clast%2Cchg_rate%2Camount%2Copen%2Cprev_close&_=1585456053043");
         return result;
     }
 

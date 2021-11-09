@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
@@ -50,6 +51,12 @@ public class StockService {
 
         for (StockBean stockBean : stockList) {
             stockUpdateTask(stockBean, stockTaskTypeEnum);
+            Random rd=new Random();
+            try {
+                Thread.sleep(rd.nextInt(1000));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         return true;
     }

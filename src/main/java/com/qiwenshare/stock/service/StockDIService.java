@@ -6,14 +6,15 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.qiwenshare.common.util.HttpsUtils;
 import com.qiwenshare.stock.api.IAbnormalaActionService;
 import com.qiwenshare.stock.api.IEchnicalaspectService;
 import com.qiwenshare.stock.api.IStockBidService;
 import com.qiwenshare.stock.api.IStockDIService;
-import com.qiwenshare.stock.common.ProxyHttpRequest;
 import com.qiwenshare.stock.domain.*;
 import com.qiwenshare.stock.mapper.StockBidMapper;
 import com.qiwenshare.stock.mapper.StockMapper;
+import org.apache.commons.io.IOUtils;
 import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,11 +23,9 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManagerFactory;
+import java.io.IOException;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -135,11 +134,16 @@ public class StockDIService extends ServiceImpl<StockMapper, StockBean> implemen
     public JSONObject getStockShare(String stockCode) {
         System.out.println("正在获取股票编号：" + stockCode);
         String url = "http://query.sse.com.cn/commonQuery.do";
-        Map<String, String> param = new HashMap<String, String>();
+        Map<String, Object> param = new HashMap<String, Object>();
         param.put("isPagination", "false");
         param.put("sqlId", "COMMON_SSE_CP_GPLB_GPGK_GBJG_C");
         param.put("companyCode", stockCode);
-        String sendResult = new ProxyHttpRequest().sendGet(url, param);
+        String sendResult = "";
+        try {
+            sendResult = IOUtils.toString(HttpsUtils.doGet(url, param), "utf-8");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         JSONArray result = null;
         try {
             result = JSONObject.parseObject(sendResult).getJSONArray("result");
@@ -160,7 +164,7 @@ public class StockDIService extends ServiceImpl<StockMapper, StockBean> implemen
         //String param = "isPagination=true&stockCode=&csrcCode=&areaName=&stockType=" + stockType + "&pageHelp.cacheSize=1&pageHelp.beginPage=1&pageHelp.pageSize=3000&pageHelp.pageNo=1&_=1553181823571";
         List<StockBean> stockBeanList = new ArrayList<StockBean>();
         for (int i = 1 ; i < 5; i++) {
-            Map<String, String> param = new HashMap<String, String>();
+            Map<String, Object> param = new HashMap<String, Object>();
             param.put("isPagination", "true");
             param.put("stockType", "1");
             param.put("pageHelp.cacheSize", "1");
@@ -168,17 +172,25 @@ public class StockDIService extends ServiceImpl<StockMapper, StockBean> implemen
             param.put("pageHelp.pageSize", "1000");
             param.put("pageHelp.pageNo", i + "");
             param.put("pageHelp.endPage", i + "1");
-            String sendResult = new ProxyHttpRequest().sendGet(url, param);
-            int retryCount = 0;
-            while (sendResult.indexOf("Welcome To Zscaler Directory Authentication Sign In") != -1 && retryCount < 50) {
-                sendResult = new ProxyHttpRequest().sendGet(url, param);
-                retryCount++;
+            String sendResult = null;
+            try {
+                sendResult = IOUtils.toString(HttpsUtils.doGet(url, param), "utf-8");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+//            int retryCount = 0;
+//            while (sendResult.indexOf("Welcome To Zscaler Directory Authentication Sign In") != -1 && retryCount < 50) {
+//                sendResult = new ProxyHttpRequest().sendGet(url, param);
+//                retryCount++;
+//            }
             JSONObject pageHelp = new JSONObject();
             try {
                 pageHelp = JSONObject.parseObject(sendResult).getJSONObject("pageHelp");
             } catch (JSONException e) {
                 logger.error("解析jsonb报错："+ pageHelp.toJSONString());
+            } catch (NullPointerException e) {
+                logger.error(e.getMessage());
+                e.printStackTrace();
             }
             List<StockBean> jsonArr = JSON.parseArray(pageHelp.getString("data"), StockBean.class);
 
@@ -194,6 +206,12 @@ public class StockDIService extends ServiceImpl<StockMapper, StockBean> implemen
 
 
                 stockBeanList.add(stockStr);
+            }
+            Random rd=new Random();
+            try {
+                Thread.sleep(rd.nextInt(1000));
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
 
