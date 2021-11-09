@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.qiwenshare.stock.constant.ProxyConstant;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 
@@ -100,7 +101,15 @@ public class ProxyHttpRequest {
         ProxyBean proxyBean = null;
         int currentRandomIndex = 0;
         if (proxyBeans.size() <= 1) {
-            return "没有可用的代理";
+            String proxyRequest = getProxyRequestResult(ProxyConstant.SERVER_PROXY_COUNT);
+            JSONObject resultObj = JSONObject.parseObject(proxyRequest);
+            String requestJson = JSON.toJSONString(resultObj.getObject("data", List.class));
+            proxyBeans = JSONArray.parseArray(requestJson, ProxyBean.class);
+            if (proxyBeans.size() <= 1) {
+                return "没有可用的代理";
+            }
+            currentRandomIndex = new Random().nextInt(proxyBeans.size());
+            proxyBean = (ProxyBean) proxyBeans.get(currentRandomIndex);
         } else {
             currentRandomIndex = new Random().nextInt(proxyBeans.size());
             proxyBean = (ProxyBean) proxyBeans.get(currentRandomIndex);
@@ -135,7 +144,13 @@ public class ProxyHttpRequest {
         if (!isRequestSuccess
                 || doc.text().indexOf("Welcome To Zscaler Directory Authentication") != -1
                 || doc.text().indexOf("ACCESS DENIED") != -1
-                || doc.text().indexOf("If you have the access code") != -1) {
+                || doc.text().indexOf("If you have the access code") != -1
+                || doc.text().indexOf("DansGuardian") != -1
+                || doc.text().indexOf("Pagina nueva") != -1
+                || doc.text().indexOf("Access denied") != -1
+                || doc.text().indexOf("Sukanda OneLink") != -1
+                || doc.text().indexOf("管理后台") != -1
+        || StringUtils.isEmpty(doc.text())) {
             return sendGet(url, param);
         }
 
