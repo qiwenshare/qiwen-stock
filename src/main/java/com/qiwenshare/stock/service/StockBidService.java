@@ -3,19 +3,17 @@ package com.qiwenshare.stock.service;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.LambdaUpdateWrapper;
-import com.qiwenshare.common.util.HttpsUtils;
 import com.qiwenshare.stock.api.IStockBidService;
+import com.qiwenshare.stock.common.HttpsUtils;
 import com.qiwenshare.stock.domain.StockBean;
 import com.qiwenshare.stock.domain.StockBidBean;
 import com.qiwenshare.stock.domain.StockBidObj;
 import com.qiwenshare.stock.mapper.StockBidMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,12 +53,7 @@ public class StockBidService implements IStockBidService {
         //String param = "select=ask,bid";
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("select", "ask,bid");
-        String stockBidJson = "";
-        try {
-            stockBidJson = IOUtils.toString(HttpsUtils.doGet(url, param), "utf-8");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String stockBidJson = HttpsUtils.doGetString(url, param);
         if (StringUtils.isEmpty(stockBidJson)) {
             log.info("网络不可用:股票编号{}, stockBidJson{}", stockBean.getStockNum(),stockBidJson);
             return null;

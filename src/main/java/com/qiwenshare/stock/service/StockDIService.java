@@ -6,15 +6,14 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.qiwenshare.common.util.HttpsUtils;
 import com.qiwenshare.stock.api.IAbnormalaActionService;
 import com.qiwenshare.stock.api.IEchnicalaspectService;
 import com.qiwenshare.stock.api.IStockBidService;
 import com.qiwenshare.stock.api.IStockDIService;
+import com.qiwenshare.stock.common.HttpsUtils;
 import com.qiwenshare.stock.domain.*;
 import com.qiwenshare.stock.mapper.StockBidMapper;
 import com.qiwenshare.stock.mapper.StockMapper;
-import org.apache.commons.io.IOUtils;
 import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +22,6 @@ import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.persistence.EntityManagerFactory;
-import java.io.IOException;
 import java.sql.Date;
 import java.util.*;
 import java.util.concurrent.ExecutorService;
@@ -138,12 +136,7 @@ public class StockDIService extends ServiceImpl<StockMapper, StockBean> implemen
         param.put("isPagination", "false");
         param.put("sqlId", "COMMON_SSE_CP_GPLB_GPGK_GBJG_C");
         param.put("companyCode", stockCode);
-        String sendResult = "";
-        try {
-            sendResult = IOUtils.toString(HttpsUtils.doGet(url, param), "utf-8");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        String sendResult = HttpsUtils.doGetString(url, param);
         JSONArray result = null;
         try {
             result = JSONObject.parseObject(sendResult).getJSONArray("result");
@@ -172,12 +165,8 @@ public class StockDIService extends ServiceImpl<StockMapper, StockBean> implemen
             param.put("pageHelp.pageSize", "1000");
             param.put("pageHelp.pageNo", i + "");
             param.put("pageHelp.endPage", i + "1");
-            String sendResult = null;
-            try {
-                sendResult = IOUtils.toString(HttpsUtils.doGet(url, param), "utf-8");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            String sendResult = HttpsUtils.doGetString(url, param);
+
 //            int retryCount = 0;
 //            while (sendResult.indexOf("Welcome To Zscaler Directory Authentication Sign In") != -1 && retryCount < 50) {
 //                sendResult = new ProxyHttpRequest().sendGet(url, param);

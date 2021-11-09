@@ -3,7 +3,7 @@ package com.qiwenshare.stock.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.qiwenshare.common.result.RestResult;
-import com.qiwenshare.common.util.HttpsUtils;
+import com.qiwenshare.stock.common.HttpsUtils;
 import com.qiwenshare.stock.analysis.ReplayOperation;
 import com.qiwenshare.stock.api.*;
 import com.qiwenshare.stock.common.TableData;
