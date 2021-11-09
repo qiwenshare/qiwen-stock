@@ -3,20 +3,18 @@ package com.qiwenshare.stock.service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.qiwenshare.common.util.DateUtil;
-import com.qiwenshare.common.util.HttpsUtils;
 import com.qiwenshare.stock.api.IStockDayInfoService;
+import com.qiwenshare.stock.common.HttpsUtils;
 import com.qiwenshare.stock.constant.StockConstant;
 import com.qiwenshare.stock.domain.StockBean;
 import com.qiwenshare.stock.domain.StockDayInfo;
 import com.qiwenshare.stock.domain.StockKLineObj;
 import com.qiwenshare.stock.mapper.StockMapper;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.io.IOException;
 import java.sql.Date;
 import java.text.ParseException;
 import java.util.ArrayList;
@@ -91,14 +89,9 @@ public class StockDayInfoService implements IStockDayInfoService {
         param.put("begin", "-1800");
         param.put("end", "-1");
         StockKLineObj stockObjBean = null;
-        String stockJson = "";
+        String stockJson  = HttpsUtils.doGetString(url, param);
         try {
-//            stockJson = new ProxyHttpRequest().sendGet(url, param);
-            try {
-                stockJson = IOUtils.toString(HttpsUtils.doGet(url, param), "utf-8");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+
             stockObjBean = JSON.parseObject(stockJson, StockKLineObj.class);
         } catch (JSONException e) {
             logger.error("JSONException:抓取报文{}", stockJson);
