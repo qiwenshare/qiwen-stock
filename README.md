@@ -66,7 +66,7 @@
 ## 联系我
 如果对该项目感兴趣，或者有各种问题可扫描加入QQ群
 
-![输入图片说明](https://images.gitee.com/uploads/images/2020/0404/230620_c45ef962_947714.png "屏幕截图.png")
+![联系我们 二维码](https://images.gitee.com/uploads/images/2021/1123/141654_fb88d164_1837873.png "屏幕截图.png")
 
 
 
