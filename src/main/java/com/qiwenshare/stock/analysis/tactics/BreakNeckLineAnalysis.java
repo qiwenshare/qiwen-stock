@@ -5,7 +5,6 @@ import com.qiwenshare.stock.domain.StockBean;
 import com.qiwenshare.stock.domain.StockDayInfo;
 import com.qiwenshare.stock.indicator.product.KDJ;
 
-import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.List;
 
@@ -83,7 +82,7 @@ public class BreakNeckLineAnalysis extends TacticsAnalysis {
                 for (int j = low_i_index - 30; j < low_i_index + 1; j++) {
                     if (stockDayInfoList.get(j).getHigh() > neckline) {
                         neckline = stockDayInfoList.get(j).getHigh();
-                        Date date = stockDayInfoList.get(j).getDate();
+                        String date = stockDayInfoList.get(j).getDate();
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
                         formatDate = sdf.format(date);
                     }

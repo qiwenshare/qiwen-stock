@@ -12,5 +12,5 @@ public interface IStockDayInfoService {
 
     List<StockDayInfo> selectStockDayInfoList(StockBean stockBean);
 
-    List<StockDayInfo> crawlStockDayInfoListByStockBean(StockBean stockBean);
+    List<StockDayInfo> crawlStockDayInfoListByStockBean(String stockNum);
 }

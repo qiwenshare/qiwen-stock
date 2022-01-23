@@ -19,15 +19,12 @@ public class ReplayRunnable implements Runnable {
     public static int totalCount = 0;
     public StockBean stockBean;
 
-//    IStockDIService stockDIService;
-
     IStockDayInfoService stockDayInfoService;
 
     IReplayService replayService;
 
     public ReplayRunnable(StockBean stockBean, IReplayService replayService, IStockDayInfoService stockDayInfoService) {
         this.stockBean = stockBean;
-//        this.stockDIService = stockDIService;
         this.stockDayInfoService = stockDayInfoService;
         this.replayService = replayService;
     }

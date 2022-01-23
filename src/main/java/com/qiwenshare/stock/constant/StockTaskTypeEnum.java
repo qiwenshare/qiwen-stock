@@ -4,11 +4,8 @@ package com.qiwenshare.stock.constant;
  * 股票任务类型枚举
  */
 public enum StockTaskTypeEnum {
-    STOCK(0, "股票列表任务"),
-    TIME(1, "分时线任务"),
-    DAY(2, "日线任务"),
-    WEEK(3, "周线任务"),
-    MONTH(4, "月线任务");
+    STOCK_LIST(0, "股票列表任务"),
+    STOCK_DETAIL(1, "股票详情任务");
 
     private int typeCode;
 

@@ -2,8 +2,6 @@ package com.qiwenshare.stock.domain;
 
 import lombok.Data;
 
-import java.sql.Date;
-
 @Data
 public class StockMonthInfo {
     private String monthInfoId;
@@ -11,7 +9,7 @@ public class StockMonthInfo {
     /**
      * 日期
      */
-    private Date date;
+    private String date;
     /**
      * 今开
      */
@@ -72,15 +70,11 @@ public class StockMonthInfo {
         super();
     }
 
-    public StockMonthInfo(Date date, double open, double high, double low, double close,
+    public StockMonthInfo(String date, double open, double high, double low, double close,
                           double volume, double amount) {
         super();
-        if (date == null) {
-            this.date = null;
-        } else {
-            this.date = (Date) date.clone();
-        }
 
+        this.date = date;
         this.open = open;
         this.high = high;
         this.low = low;

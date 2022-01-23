@@ -7,7 +7,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.sql.Date;
 
 @Data
 @Entity
@@ -22,7 +21,7 @@ public class ReplayBean {
     private String stockNum;
 
     @Column
-    private Date date;
+    private String date;
     @Column
     private int bought;
     @Column

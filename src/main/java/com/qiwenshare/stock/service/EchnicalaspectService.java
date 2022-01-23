@@ -46,14 +46,17 @@ public class EchnicalaspectService implements IEchnicalaspectService {
     }
 
     @Override
-    public EchnicalaspectBean getEchnicalaspectInfo(List<StockDayInfo> stockDayInfoList, StockBean stockBean) {
+    public EchnicalaspectBean getEchnicalaspectInfo(String stockNum, List<StockDayInfo> stockDayInfoList) {
         MA ma = new MA();
         KDJ kdj = new KDJ();
         MACD macd = new MACD();
         RSI rsi = new RSI();
         TacticsAnalysis tacticsAnalysis = new CattleCatchingAnalysis();
+        //8888888888888888888888888888888java.lang.ArrayIndexOutOfBoundsException: -1
         StockDayInfo preStockDayInfo = stockDayInfoList.get(stockDayInfoList.size() - 2);
         StockDayInfo stockDayInfo = stockDayInfoList.get(stockDayInfoList.size() - 1);
+        StockBean stockBean = new StockBean();
+        stockBean.setStockNum(stockNum);
         ReplayBean replayBean = tacticsAnalysis.getOperation(stockDayInfoList, stockBean);
 
         boolean isGoldenCross = ma.isGoldenCross(stockDayInfoList);
@@ -73,7 +76,7 @@ public class EchnicalaspectService implements IEchnicalaspectService {
 
         String currentTime = DateUtil.getCurrentTime();
         EchnicalaspectBean echnicalaspectBean = new EchnicalaspectBean();
-        echnicalaspectBean.setStockNum(stockBean.getStockNum());
+        echnicalaspectBean.setStockNum(stockNum);
         echnicalaspectBean.setUpdateDate(currentTime);
         echnicalaspectBean.setGoldenCross(isGoldenCross ? 1 : 0);
         echnicalaspectBean.setDeathCross(isDeathCross ? 1 : 0);

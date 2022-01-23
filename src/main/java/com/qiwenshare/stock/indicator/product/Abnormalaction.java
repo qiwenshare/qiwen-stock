@@ -17,30 +17,30 @@ public class Abnormalaction {
         for (int i = 0; i < stockTimeInfoList.size() - 10; i++) {
             heightUpdownRange = -900000;
             lowUpdownRange = 900000;
-            int startTime = Integer.parseInt(stockTimeInfoList.get(i).getTime());
+            int startTime = Integer.parseInt(stockTimeInfoList.get(i).getTime().replace(":", ""));
             for (int j = i; j < i + 10; j++) {
 
                 if (stockTimeInfoList.get(j).getUpDownRange() > heightUpdownRange) {
                     heightUpdownRange = stockTimeInfoList.get(j).getUpDownRange();
-                    heightTime = Integer.parseInt(stockTimeInfoList.get(j).getTime());
+                    heightTime = Integer.parseInt(stockTimeInfoList.get(j).getTime().replace(":", ""));
 
                 }
                 if (stockTimeInfoList.get(j).getUpDownRange() < lowUpdownRange) {
                     lowUpdownRange = stockTimeInfoList.get(j).getUpDownRange();
-                    lowTime = Integer.parseInt(stockTimeInfoList.get(j).getTime());
+                    lowTime = Integer.parseInt(stockTimeInfoList.get(j).getTime().replace(":", ""));
                 }
             }
             if (heightUpdownRange - lowUpdownRange > 0.02
                     && heightTime > lowTime
-                    && startTime > 100000) {
+                    && startTime > 1000) {
                 abnormalactionBean.setIsAbnormalaction(1);
                 abnormalactionBean.setUpDownRange(heightUpdownRange - lowUpdownRange);
                 try {
                     abnormalactionBean.setDate(new java.sql.Date(DateUtil.getDateByFormatString( stockTimeInfoList.get(i).getDate(),"yyyyMMdd").getTime()));
                     String time = stockTimeInfoList.get(i).getTime();
-                    int hour = Integer.parseInt(time.substring(0, 2));
-                    int minute = Integer.parseInt(time.substring(2, 4));
-                    int second = Integer.parseInt(time.substring(4, 6));
+                    int hour = Integer.parseInt(time.substring(0, 2).replace(":", ""));
+                    int minute = Integer.parseInt(time.substring(2, 4).replace(":", ""));
+                    int second = 0;
                     abnormalactionBean.setTime(new java.sql.Time(hour, minute, second));
                 } catch (ParseException e) {
                     e.printStackTrace();

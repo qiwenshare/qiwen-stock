@@ -1,6 +1,5 @@
 package com.qiwenshare.stock.api;
 
-import com.qiwenshare.stock.domain.StockBean;
 import com.qiwenshare.stock.domain.StockBidBean;
 
 public interface IStockBidService {
@@ -10,7 +9,7 @@ public interface IStockBidService {
     StockBidBean getStockBidBean(String stockNum);
 
 
-    StockBidBean getBidByStockBean(StockBean stockBean);
+    StockBidBean crawlBidByStockBean(String stockNum);
 
     void updateStockBid(StockBidBean stockBidBean);
 }

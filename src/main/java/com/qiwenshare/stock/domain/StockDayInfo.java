@@ -2,23 +2,16 @@ package com.qiwenshare.stock.domain;
 
 import lombok.Data;
 
-import java.sql.Date;
-
 @Data
 public class StockDayInfo {
     private String dayInfoId;
 
-    private long stockId;
 
-    /**
-     * 股票代码
-     */
-    private String stockCode;
 
     /**
      * 日期
      */
-    private Date date;
+    private String date;
     /**
      * 今开
      */
@@ -80,15 +73,10 @@ public class StockDayInfo {
         super();
     }
 
-    public StockDayInfo(String stockCode, Date date, double open, double high, double low, double close,
+    public StockDayInfo(String date, double open, double high, double low, double close,
                         double volume, double amount) {
         super();
-        this.stockCode = stockCode;
-        if (date == null) {
-            this.date = null;
-        } else {
-            this.date = (Date) date.clone();
-        }
+        this.date = date;
         this.open = open;
         this.high = high;
         this.low = low;

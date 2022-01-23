@@ -1,6 +1,7 @@
 package com.qiwenshare.stock.service;
 
 
+import com.qiwenshare.common.util.DateUtil;
 import com.qiwenshare.stock.api.IStockMonthInfoService;
 import com.qiwenshare.stock.domain.StockBean;
 import com.qiwenshare.stock.domain.StockDayInfo;
@@ -10,6 +11,7 @@ import com.qiwenshare.stock.mapper.StockMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 import java.util.*;
 
 @Service
@@ -89,11 +91,10 @@ public class StockMonthInfoService implements IStockMonthInfoService {
         double monthVolume = 0;
         double monthAmount = 0;
         double monthPreClose = 0;
-        Date monthDate = new Date();
+        String monthDate = "";
         int preDayOfMonth = 0;
         List<StockMonthInfo> stockMonthInfoList = new ArrayList<>();
         for (int i = 0; i < stockDayInfoList.size(); i++) {
-            Date stringDate = stockDayInfoList.get(i).getDate();
             double open = stockDayInfoList.get(i).getOpen();
             double close = stockDayInfoList.get(i).getClose();
             double high = stockDayInfoList.get(i).getHigh();
@@ -101,10 +102,14 @@ public class StockMonthInfoService implements IStockMonthInfoService {
             double volume = stockDayInfoList.get(i).getVolume();
             double amount = stockDayInfoList.get(i).getAmount();
             double preClose = stockDayInfoList.get(i).getPreClose();
-            Date date = stockDayInfoList.get(i).getDate();
+            String date = stockDayInfoList.get(i).getDate();
 
             Calendar cal = Calendar.getInstance();
-            cal.setTime(stringDate);
+            try {
+                cal.setTime(DateUtil.getDateByFormatString(date, "yyyy-MM-dd"));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
             int dayOfMonth = cal.get(Calendar.DAY_OF_MONTH);
             int lastDay = cal.getActualMaximum(Calendar.DAY_OF_MONTH);
             if (beginOfMonth(dayOfMonth, preDayOfMonth)) {
@@ -118,7 +123,7 @@ public class StockMonthInfoService implements IStockMonthInfoService {
                     stockMonthInfo.setAmount(monthAmount);
                     stockMonthInfo.setVolume(monthVolume);
                     stockMonthInfo.setPreClose(monthPreClose);
-                    stockMonthInfo.setDate(new java.sql.Date(monthDate.getTime()));
+                    stockMonthInfo.setDate(monthDate);
                     stockMonthInfoList.add(stockMonthInfo);
                     monthOpen = 0;
                     monthClose = 0;
@@ -160,16 +165,16 @@ public class StockMonthInfoService implements IStockMonthInfoService {
         stockMonthInfo.setAmount(monthAmount);
         stockMonthInfo.setVolume(monthVolume);
         stockMonthInfo.setPreClose(monthPreClose);
-        stockMonthInfo.setDate(new java.sql.Date(monthDate.getTime()));
+        stockMonthInfo.setDate(monthDate);
         stockMonthInfoList.add(stockMonthInfo);
         stockMonthInfoList = new IndicatorProxy().getMonthIndicatorList(stockMonthInfoList);
         return stockMonthInfoList;
     }
 
     @Override
-    public void insertStockMonthInfo(String stockMonthInfoTable, List<StockMonthInfo> stockmonthinfo) {
+    public void insertStockMonthInfo(String stockNum, List<StockMonthInfo> stockmonthinfo) {
         Map<String, Object> stockMonthInfoMap = new HashMap<String, Object>();
-        stockMonthInfoMap.put("stockMonthInfoTable", stockMonthInfoTable);
+        stockMonthInfoMap.put("stockMonthInfoTable", "stockmonthinfo_" + stockNum);
         stockMonthInfoMap.put("stockmonthinfo", stockmonthinfo);
         stockMapper.insertStockMonthInfo(stockMonthInfoMap);
     }

@@ -105,7 +105,7 @@ public class StockWebsocket {
         try {
             getSession().getBasicRemote().sendText(message);
         } catch (Exception e) {
-            log.error("消息推送失败");
+//            log.error("消息推送失败");
         }
 
         //     session.getBasicRemote().sendText(message);

@@ -9,7 +9,7 @@ import java.util.List;
 public interface IStockMonthInfoService {
     List<StockMonthInfo> getStockMonthInfoList(List<StockDayInfo> stockDayInfoList);
 
-    void insertStockMonthInfo(String stockMonthInfoTable, List<StockMonthInfo> stockMonthinfo);
+    void insertStockMonthInfo(String stockNum, List<StockMonthInfo> stockMonthinfo);
 
     public List<StockMonthInfo> getStockmonthbar(String stockNum);
 

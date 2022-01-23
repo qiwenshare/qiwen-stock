@@ -1,14 +1,13 @@
 package com.qiwenshare.stock.service;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.JSONObject;
 import com.qiwenshare.stock.api.IStockTimeInfoService;
 import com.qiwenshare.stock.common.HttpsUtils;
-import com.qiwenshare.stock.domain.StockBean;
 import com.qiwenshare.stock.domain.StockTimeInfo;
-import com.qiwenshare.stock.domain.StockTimeLineObj;
 import com.qiwenshare.stock.mapper.StockMapper;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -37,64 +36,71 @@ public class StockTimeInfoService implements IStockTimeInfoService {
         return stockMapper.selectStocktimeListByStockNum(stockTimeInfo);
     }
 
-    /**
-     * 获取分时数据
-     *
-     * @param stockBean
-     * @return
-     */
     @Override
-    public List<StockTimeInfo> getStockTimeInfoListByStockBean(StockBean stockBean) {
-        String url = "http://yunhq.sse.com.cn:32041/v1/sh1/line/" + stockBean.getStockNum();
+    public List<StockTimeInfo> crawlStockTimeInfoList(String stockNum) {
+        String url = "http://push2his.eastmoney.com/api/qt/stock/trends2/get";
         //String param = "begin=0&end=-1&select=time,price,volume";
         Map<String, Object> param = new HashMap<String, Object>();
-        param.put("begin", "0");
-        param.put("end", "-1");
-        param.put("select", "time,price,volume");
-        String stockTimeLineJson = HttpsUtils.doGetString(url, param);
-        if (StringUtils.isEmpty(stockTimeLineJson)) {
-            log.error("stockTimeLineJson爬取数据为空：stockNum:" + stockBean.getStockNum());
-            return null;
-        }
-        StockTimeLineObj stockTimeLineObj = null;
+        param.put("fields1", "f1%2Cf2%2Cf3%2Cf4%2Cf5%2Cf6%2Cf7%2Cf8%2Cf9%2Cf10%2Cf11%2Cf12%2Cf13");
+        param.put("fields2", "f51%2Cf52%2Cf53%2Cf54%2Cf55%2Cf56%2Cf57%2Cf58");
+        param.put("ut", "7eea3edcaed734bea9cbfc24409ed989");
+        param.put("ndays", "1");
+        param.put("iscr", "0");
+        param.put("secid", "1." + stockNum);
+        String sendResult = HttpsUtils.doGetString(url, param);
+
+        JSONObject data = new JSONObject();
         try {
-            stockTimeLineObj = JSON.parseObject(stockTimeLineJson, StockTimeLineObj.class);
-        } catch (Exception e) {
-            log.error("解析分时数据报错：stockTileLineJson: {}", stockTimeLineJson);
+            data = JSONObject.parseObject(sendResult).getJSONObject("data");
+        } catch (JSONException e) {
+            log.error("解析jsonb报错：" + data.toJSONString());
+        } catch (NullPointerException e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
         }
 
-        if (stockTimeLineObj == null) {
-            log.error("stockTimeLineJson解析数据为空:stockNum:" + stockBean.getStockNum());
-            return null;
-        }
-        List<String> stockTimeLineList = JSON.parseArray(stockTimeLineObj.getLine(), String.class);
-        String date = stockTimeLineObj.getDate();
-        double sumPrice = 0;
-        double prevClose = Double.parseDouble(stockTimeLineObj.getPrev_close());
         List<StockTimeInfo> stockTimeInfoList = new ArrayList<StockTimeInfo>();
-        for (int i = 0; i < stockTimeLineList.size(); i++) {
+        Double prevClose = objectToBigDecimal(data.get("prePrice"));
+        Double sumPrice = 0D;
+        JSONArray trends = data.getJSONArray("trends");
+        for (int i = 0; i < trends.size(); i++) {
+
             StockTimeInfo stockTimeInfo = new StockTimeInfo();
-            List<String> stockParseTimeline = JSON.parseArray(stockTimeLineList.get(i), String.class);
-            double price = Double.parseDouble(stockParseTimeline.get(1));
+            String trend = (String) trends.get(i);
+            String[] item = trend.split(",");
+            Double price = objectToBigDecimal(item[2]);
             sumPrice += price;
-            stockTimeInfo.setTime(stockParseTimeline.get(0));
-            stockTimeInfo.setDate(date);
-            stockTimeInfo.setUpDownRange((price - prevClose) / prevClose);
-            stockTimeInfo.setPrice(price);
-            stockTimeInfo.setAvgPrice(sumPrice / (i + 1));
-            stockTimeInfo.setVolume(Double.parseDouble(stockParseTimeline.get(2)));
+            String datetime = item[0];
+            stockTimeInfo.setDate(datetime.split(" ")[0]);
+            stockTimeInfo.setTime(datetime.split(" ")[1]);
+            stockTimeInfo.setStockCode(stockNum);
+            stockTimeInfo.setPrice(objectToBigDecimal(item[2]));
+            stockTimeInfo.setAmount(objectToBigDecimal(item[6]));
+            stockTimeInfo.setVolume(objectToBigDecimal(item[5]));
+            stockTimeInfo.setUpDownRange((price-prevClose)/prevClose);
+            stockTimeInfo.setAvgPrice(sumPrice/(i+1));
             stockTimeInfoList.add(stockTimeInfo);
         }
-
         return stockTimeInfoList;
     }
 
     @Override
-    public void insertStockTimeInfo(String stockTimeInfoTable, List<StockTimeInfo> stocktimeinfo) {
+    public void insertStockTimeInfo(String stockNum, List<StockTimeInfo> stocktimeinfo) {
 
         Map<String, Object> stockDayInfoMap = new HashMap<String, Object>();
-        stockDayInfoMap.put("stockTimeInfoTable", stockTimeInfoTable);
+        stockDayInfoMap.put("stockTimeInfoTable", "stocktimeinfo_" + stockNum);
         stockDayInfoMap.put("stocktimeinfo", stocktimeinfo);
         stockMapper.insertStockTimeInfo(stockDayInfoMap);
+    }
+
+
+    public Double objectToBigDecimal(Object o) {
+        try {
+            return Double.valueOf(String.valueOf(o));
+        } catch (NumberFormatException e) {
+            return Double.valueOf(0);
+        }
+
+
     }
 }

@@ -2,8 +2,6 @@ package com.qiwenshare.stock.domain;
 
 import lombok.Data;
 
-import java.sql.Date;
-
 @Data
 public class StockWeekInfo {
     private String weekInfoId;
@@ -18,7 +16,7 @@ public class StockWeekInfo {
     /**
      * 日期
      */
-    private Date date;
+    private String date;
     /**
      * 今开
      */
@@ -79,15 +77,12 @@ public class StockWeekInfo {
         super();
     }
 
-    public StockWeekInfo(String stockCode, Date date, double open, double high, double low, double close,
+    public StockWeekInfo(String stockCode, String date, double open, double high, double low, double close,
                          double volume, double amount) {
         super();
         this.stockCode = stockCode;
-        if (date == null) {
-            this.date = null;
-        } else {
-            this.date = (Date) date.clone();
-        }
+        this.date = date;
+
         this.date = date;
         this.open = open;
         this.high = high;
