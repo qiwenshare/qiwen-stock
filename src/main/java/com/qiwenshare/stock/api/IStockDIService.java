@@ -14,7 +14,6 @@ public interface IStockDIService {
 
     public void createStockInfoTable(String stockNum);
 
-    public void initStockTable();
 
     List<StockBean> selectStockList(String key, Long beginCount, Long pageCount);
 

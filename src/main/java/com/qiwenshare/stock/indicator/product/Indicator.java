@@ -6,10 +6,6 @@ import com.qiwenshare.stock.domain.StockWeekInfo;
 
 import java.util.List;
 
-/**
- * 抽象产品角色
- * （指标）
- */
 public interface Indicator {
 
     public List<StockDayInfo> getDayIndicatorList(List<StockDayInfo> StockdayinfoList);

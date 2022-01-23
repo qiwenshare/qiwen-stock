@@ -9,7 +9,7 @@ import java.util.List;
 public interface IStockWeekInfoService {
     List<StockWeekInfo> getStockWeekInfoList(List<StockDayInfo> stockDayInfoList);
 
-    void insertStockWeekInfo(String stockWeekInfoTable, List<StockWeekInfo> stockWeekinfo);
+    void insertStockWeekInfo(String stockNum, List<StockWeekInfo> stockWeekinfo);
 
     public List<StockWeekInfo> getStockweekbar(String stockNum);
 

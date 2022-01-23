@@ -3,22 +3,21 @@ package com.qiwenshare.stock.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.qiwenshare.common.result.RestResult;
-import com.qiwenshare.stock.common.HttpsUtils;
 import com.qiwenshare.stock.analysis.ReplayOperation;
 import com.qiwenshare.stock.api.*;
+import com.qiwenshare.stock.common.HttpsUtils;
 import com.qiwenshare.stock.common.TableData;
 import com.qiwenshare.stock.common.TableQueryBean;
+import com.qiwenshare.stock.common.TaskProcess;
 import com.qiwenshare.stock.constant.StockTaskTypeEnum;
 import com.qiwenshare.stock.domain.*;
 import com.qiwenshare.stock.executor.ReplayRunnable;
-import com.qiwenshare.stock.executor.StockService;
+import com.qiwenshare.stock.executor.StockExecutor;
 import com.qiwenshare.stock.websocket.StockWebsocket;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -35,14 +34,16 @@ import java.util.concurrent.Executors;
 @RequestMapping("/stock")
 @RestController
 public class StockController {
+    public static int totalCount = 0;
+    public static volatile int updateCount = 0;
 
     /**
      * 当前模块
      */
-    public static final String CURRENT_MODULE = "DI";
+
     private static final int NTHREADS = 5;
-    private static final Logger logger = LoggerFactory.getLogger(StockController.class);
     public static ExecutorService stockReplayexec = Executors.newFixedThreadPool(NTHREADS);
+    public static ExecutorService stockListexec = Executors.newFixedThreadPool(NTHREADS);
     @Resource
     IStockDIService stockDIService;
     @Resource
@@ -54,7 +55,7 @@ public class StockController {
     @Resource
     IStockMonthInfoService stockMonthInfoService;
     @Resource
-    StockService stockService;
+    StockExecutor stockExecutor;
     @Resource
     IStockBidService stockBidService;
     @Resource
@@ -246,8 +247,6 @@ public class StockController {
         List<StockBean> stockBeanList = new ArrayList<StockBean>();
         for (int i = 0; i < jsonArr.size(); i++) {
             StockBean stockStr = jsonArr.get(i);
-            stockStr.setStockNum(stockStr.getCOMPANY_CODE());
-            stockStr.setStockName(stockStr.getCOMPANY_ABBR());
             stockBeanList.add(stockStr);
         }
 
@@ -283,17 +282,45 @@ public class StockController {
     @RequestMapping("/updatestocklist")
     @ResponseBody
     public String updateStockList(HttpServletRequest request) {
+
         RestResult<String> restResult = new RestResult<String>();
         List<StockBean> stockBeanList = stockDIService.getStockListByScript();
         //新增股票列表
         List<StockBean> newStockList = stockDIService.getNoExistStockList(stockBeanList);
-
+        totalCount = newStockList.size();
+        updateCount = 0;
         if (newStockList.size() > 0) {
             stockDIService.insertStockList(newStockList);
+            for (StockBean stockBean : newStockList) {
+                stockListexec.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        TaskProcess taskProcess = new TaskProcess();
+                        taskProcess.setTaskId(0);
+                        synchronized (StockController.class) {
+                            updateCount++;
+                        }
+                        taskProcess.setCompleteCount(updateCount);
+                        taskProcess.setTotalCount(totalCount);
 
-            stockService.start(newStockList, StockTaskTypeEnum.STOCK);
+                        String stockNum = stockBean.getStockNum();
+                        EchnicalaspectBean echnicalaspect = new EchnicalaspectBean(stockNum);
+                        AbnormalactionBean abnormalactionBean = new AbnormalactionBean(stockNum);
+                        StockBidBean stockBidBean = new StockBidBean(stockNum);
+                        echnicalaspectService.insertEchnicalaspect(echnicalaspect);
+                        abnormalaActionService.insertAbnormalaAction(abnormalactionBean);
+                        stockBidService.insertStockBid(stockBidBean);
+                        stockDIService.createStockInfoTable(stockBean.getStockNum());
 
-            stockDIService.initStockTable();
+
+                        taskProcess.setTaskInfo("股票列表更新,当前正在更新项为：" + stockBean.getStockName() +"(" + stockBean.getStockNum() + "), 完成进度：" + updateCount + "/" + totalCount);
+                        taskProcess.setRunTask(totalCount != updateCount);
+                        StockWebsocket.pushTaskProcess(taskProcess);
+                    }
+                });
+
+            }
+
             restResult.setData("正在更新股票数量：" + newStockList.size());
         } else {
             restResult.setData("暂无可更新股票");
@@ -377,77 +404,19 @@ public class StockController {
 
 
     /**
-     * 更新分时数据
+     * 更新股票数据
      *
      * @return
      */
-    @Operation(summary = "更新分时数据")
+    @Operation(summary = "更新股票数据")
     @RequestMapping("/updatestocktimeinfo")
     @ResponseBody
     public String updateStockTimeInfo() {
         RestResult<String> restResult = new RestResult<String>();
         //1、获取所有股票列表
         List<StockBean> stocklist = stockDIService.selectTotalStockList();
+        stockExecutor.start(stocklist);
 
-        stockService.start(stocklist, StockTaskTypeEnum.TIME);
-
-        restResult.setSuccess(true);
-        return JSON.toJSONString(restResult);
-    }
-
-    /**
-     * 更新日线数据
-     *
-     * @return
-     */
-    @Operation(summary = "更新日线数据")
-    @RequestMapping("/updatestockdayinfo")
-    @ResponseBody
-    public String updateStockDayInfo() {
-        RestResult<String> restResult = new RestResult<String>();
-        logger.info("updateStockDayInfo start...");
-
-        //1、获取所有股票列表
-        List<StockBean> stocklist = stockDIService.selectTotalStockList();
-        stockService.start(stocklist, StockTaskTypeEnum.DAY);
-
-
-        restResult.setSuccess(true);
-        return JSON.toJSONString(restResult);
-    }
-
-    /**
-     * 更新周线数据
-     *
-     * @return
-     */
-    @Operation(summary = "更新周线数据")
-    @RequestMapping("/updatestockweekinfo")
-    @ResponseBody
-    public String updateStockWeekInfo() {
-        RestResult<String> restResult = new RestResult<String>();
-        //1、获取所有股票列表
-        List<StockBean> stocklist = stockDIService.selectTotalStockList();
-
-        stockService.start(stocklist, StockTaskTypeEnum.WEEK);
-        restResult.setSuccess(true);
-        return JSON.toJSONString(restResult);
-    }
-
-    /**
-     * 更新月线数据
-     *
-     * @return
-     */
-    @Operation(summary = "更新月线数据")
-    @RequestMapping("/updatestockmonthinfo")
-    @ResponseBody
-    public String updateStockMonthInfo() {
-        RestResult<String> restResult = new RestResult<String>();
-        //exec = Executors.newFixedThreadPool(NTHREADS);
-        //1、获取所有股票列表
-        List<StockBean> stocklist = stockDIService.selectTotalStockList();
-        stockService.start(stocklist, StockTaskTypeEnum.MONTH);
         restResult.setSuccess(true);
         return JSON.toJSONString(restResult);
     }
@@ -464,19 +433,14 @@ public class StockController {
         RestResult<String> restResult = new RestResult<String>();
 
         StockTaskTypeEnum enum1 = null;
-        //values获取枚举所有内容
-        for(StockTaskTypeEnum stockTaskTypeEnum : StockTaskTypeEnum.values()){
-            if(stockTaskTypeEnum.getTypeCode() == taskType){
-                enum1 =  stockTaskTypeEnum;
-            }
-        }
+
         try {
-            Boolean isStopSuccess = stockService.stop(enum1);
+            Boolean isStopSuccess = stockExecutor.stop();
             if (isStopSuccess) {
                 StockWebsocket.pushTaskState("任务已经停止", false);
                 restResult.setData("任务停止成功");
             } else {
-                StockWebsocket.pushTaskState("不要重复停止，小心我打你", false);
+                StockWebsocket.pushTaskState("不要重复停止", false);
                 restResult.setData("暂无任务可以停止");
             }
         } catch (InterruptedException e) {
@@ -501,7 +465,7 @@ public class StockController {
         RestResult<String> restResult = new RestResult<String>();
 
         try {
-            Boolean isStopSuccess = new StockService().stop(StockTaskTypeEnum.TIME);
+            Boolean isStopSuccess = new StockExecutor().stop();
             if (isStopSuccess) {
                 StockWebsocket.pushTaskState("任务已经停止", false);
                 restResult.setData("任务停止成功");
@@ -531,7 +495,7 @@ public class StockController {
         String result = "";
         String url = "http://yunhq.sse.com.cn:32041//v1/sh1/list/self/000001_000016_000010_000009_000300&select=code%2Cname%2Clast%2Cchg_rate%2Camount%2Copen%2Cprev_close&_=1585456053043";
         try {
-            result = IOUtils.toString(HttpsUtils.doGet(url), "utf-8");
+            result = IOUtils.toString(HttpsUtils.doGet(url), "GBK");
         } catch (IOException e) {
             e.printStackTrace();
         }

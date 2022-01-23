@@ -6,7 +6,6 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.sql.Date;
 
 @Data
 @Entity
@@ -21,17 +20,18 @@ public class StockBean {
     private String stockNum;
     @Column
     private String stockName;
-    /**
-     * 表名，查询用，非实体属性
-     */
+//    /**
+//     * 表名，查询用，非实体属性
+//     */
+    @Transient
     private String stockTableName;
-    //公司代码，解析json用
-    private String COMPANY_CODE;
-    //公司简称，解析json用
-    private String COMPANY_ABBR;
-    //上市日期
-    @Column
-    private String LISTING_DATE;
+//    //公司代码，解析json用
+//    private String COMPANY_CODE;
+//    //公司简称，解析json用
+//    private String COMPANY_ABBR;
+//    //上市日期
+//    @Column
+//    private String LISTING_DATE;
 
     //流通股本
     @Column
@@ -97,7 +97,8 @@ public class StockBean {
     @Column(precision = 15)
     private double flowMarketValue;
 
-    private Date updateDate;
+    private String updateDate;
+    private String listingDate;
 
 
 

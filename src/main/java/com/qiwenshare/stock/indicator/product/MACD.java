@@ -181,9 +181,9 @@ public class MACD implements Indicator {
      *
      * @return
      */
-    public Map<Date, Boolean> topDivergence(List<StockDayInfo> stockdayinfoList) {
+    public Map<String, Boolean> topDivergence(List<StockDayInfo> stockdayinfoList) {
         List<StockDayInfo> topStockDayInfoList = new ArrayList<>();
-        Map<Date, Boolean> topDivergenceMap = new HashMap<>();
+        Map<String, Boolean> topDivergenceMap = new HashMap<>();
         for (int i = 0; i < stockdayinfoList.size(); i++) {
             if (i == 0 || i == stockdayinfoList.size() - 1) {
                 continue;
@@ -214,9 +214,9 @@ public class MACD implements Indicator {
      *
      * @return
      */
-    public Map<Date, Boolean> lowDivergence(List<StockDayInfo> stockdayinfoList) {
+    public Map<String, Boolean> lowDivergence(List<StockDayInfo> stockdayinfoList) {
         List<StockDayInfo> lowStockDayInfoList = new ArrayList<>();
-        Map<Date, Boolean> lowDivergenceMap = new HashMap();
+        Map<String, Boolean> lowDivergenceMap = new HashMap();
         for (int i = 0; i < stockdayinfoList.size(); i++) {
             if (i == 0 || i == stockdayinfoList.size() - 1) {
                 continue;

@@ -178,9 +178,9 @@ public class MACDAnalysis extends IndicatorAnalysis {
      *
      * @return
      */
-    public Map<Date, Boolean> topDivergence(List<StockDayInfo> stockdayinfoList) {
+    public Map<String, Boolean> topDivergence(List<StockDayInfo> stockdayinfoList) {
         List<StockDayInfo> topStockDayInfoList = new ArrayList<>();
-        Map<Date, Boolean> topDivergenceMap = new HashMap<>();
+        Map<String, Boolean> topDivergenceMap = new HashMap<>();
         for (int i = 0; i < stockdayinfoList.size(); i++) {
             if (i == 0 || i == stockdayinfoList.size() - 1) {
                 continue;
@@ -211,9 +211,9 @@ public class MACDAnalysis extends IndicatorAnalysis {
      *
      * @return
      */
-    public Map<Date, Boolean> lowDivergence(List<StockDayInfo> stockdayinfoList) {
+    public Map<String, Boolean> lowDivergence(List<StockDayInfo> stockdayinfoList) {
         List<StockDayInfo> lowStockDayInfoList = new ArrayList<>();
-        Map<Date, Boolean> lowDivergenceMap = new HashMap();
+        Map<String, Boolean> lowDivergenceMap = new HashMap();
         for (int i = 0; i < stockdayinfoList.size(); i++) {
             if (i == 0 || i == stockdayinfoList.size() - 1) {
                 continue;
@@ -252,8 +252,8 @@ public class MACDAnalysis extends IndicatorAnalysis {
         boolean downTrend = isDownTrend(preStockDayInfo, currentStockDayInfo);
         boolean isDIFUpCrossDEA = isDIFUpCrossDEA(preStockDayInfo, currentStockDayInfo);
         boolean isDIFDownCrossDEA = isDIFDownCrossDEA(preStockDayInfo, currentStockDayInfo);
-        Map<Date, Boolean> lowDivergenceMap = lowDivergence(stockDayInfoList);
-        Map<Date, Boolean> topDivergenceMap = topDivergence(stockDayInfoList);
+        Map<String, Boolean> lowDivergenceMap = lowDivergence(stockDayInfoList);
+        Map<String, Boolean> topDivergenceMap = topDivergence(stockDayInfoList);
         boolean isTopDivergence = topDivergenceMap.get(currentStockDayInfo.getDate()) != null ? true : false;
         boolean isLowDivergence = lowDivergenceMap.get(currentStockDayInfo.getDate()) != null ? true : false;
 

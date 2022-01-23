@@ -6,44 +6,31 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.qiwenshare.stock.api.IAbnormalaActionService;
-import com.qiwenshare.stock.api.IEchnicalaspectService;
-import com.qiwenshare.stock.api.IStockBidService;
 import com.qiwenshare.stock.api.IStockDIService;
 import com.qiwenshare.stock.common.HttpsUtils;
-import com.qiwenshare.stock.domain.*;
-import com.qiwenshare.stock.mapper.StockBidMapper;
+import com.qiwenshare.stock.domain.StockBean;
+import com.qiwenshare.stock.domain.StockDayInfo;
 import com.qiwenshare.stock.mapper.StockMapper;
 import org.apache.ibatis.annotations.Param;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import javax.persistence.EntityManagerFactory;
-import java.sql.Date;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 @Service
-public class StockDIService extends ServiceImpl<StockMapper, StockBean> implements IStockDIService {
+public class StockService extends ServiceImpl<StockMapper, StockBean> implements IStockDIService {
 
-    private static final Logger logger = LoggerFactory.getLogger(StockDIService.class);
+    private static final Logger logger = LoggerFactory.getLogger(StockService.class);
     public static ExecutorService executor = Executors.newFixedThreadPool(50);
     @Resource
     StockMapper stockMapper;
-    @Resource
-    StockBidMapper stockBidMapper;
-    @Resource
-    IStockBidService stockBidService;
-    @Resource
-    IAbnormalaActionService abnormalaActionService;
-    @Resource
-    IEchnicalaspectService echnicalaspectService;
-    @Autowired
-    private EntityManagerFactory entityManagerFactory;
 
     @Override
     public void createStockInfoTable(String stockNum) {
@@ -53,45 +40,10 @@ public class StockDIService extends ServiceImpl<StockMapper, StockBean> implemen
         stockMapper.createStockTimeInfoTable("stocktimeinfo_" + stockNum);
     }
 
-    @Override
-    public void initStockTable() {
-        List<StockBean> stockList = stockMapper.selectTotalStockList();
-
-        for (int i = 0; i < stockList.size(); i++) {
-            String stockNum = stockList.get(i).getStockNum();
-            System.out.println("----------stockNum--" + stockNum);
-            EchnicalaspectBean echnicalaspect = new EchnicalaspectBean(stockNum);
-            StockBidBean stockBidBean = new StockBidBean(stockNum);
-            AbnormalactionBean abnormalactionBean = new AbnormalactionBean(stockNum);
-
-            echnicalaspectService.insertEchnicalaspect(echnicalaspect);
-            stockBidService.insertStockBid(stockBidBean);
-            abnormalaActionService.insertAbnormalaAction(abnormalactionBean);
-        }
-    }
-
 
     @Override
     public void insertStockList(List<StockBean> stockBeanList) {
         stockMapper.insertStockList(stockBeanList);
-
-        List<StockBean> stockBeans = stockMapper.selectTotalStockList();
-        for (StockBean stockBean : stockBeans) {
-            executor.execute(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        logger.info("股票详情获取中：", stockBean.getStockNum());
-                        JSONObject stockShare = getStockShare(stockBean.getStockNum());
-                        stockBean.setTotalFlowShares(stockShare.getDoubleValue("DOMESTIC_SHARES") * 10000);
-                        stockBean.setTotalShares(stockShare.getDoubleValue("UNLIMITED_SHARES") * 10000);
-                        stockMapper.updateById(stockBean);
-                    } catch (Exception e) {
-                        logger.error("getStockShare fail:stockNum{}, errorMessage: {}", stockBean.getStockNum(), e);
-                    }
-                }
-            });
-        }
     }
 
     @Override
@@ -153,61 +105,75 @@ public class StockDIService extends ServiceImpl<StockMapper, StockBean> implemen
 
     @Override
     public List<StockBean> getStockListByScript() {
-        String url = "http://query.sse.com.cn/security/stock/getStockListData2.do";
-        //String param = "isPagination=true&stockCode=&csrcCode=&areaName=&stockType=" + stockType + "&pageHelp.cacheSize=1&pageHelp.beginPage=1&pageHelp.pageSize=3000&pageHelp.pageNo=1&_=1553181823571";
+        String url = "http://19.push2.eastmoney.com/api/qt/clist/get";
+
         List<StockBean> stockBeanList = new ArrayList<StockBean>();
-        for (int i = 1 ; i < 5; i++) {
-            Map<String, Object> param = new HashMap<String, Object>();
-            param.put("isPagination", "true");
-            param.put("stockType", "1");
-            param.put("pageHelp.cacheSize", "1");
-            param.put("pageHelp.beginPage", i + "");
-            param.put("pageHelp.pageSize", "1000");
-            param.put("pageHelp.pageNo", i + "");
-            param.put("pageHelp.endPage", i + "1");
-            String sendResult = HttpsUtils.doGetString(url, param);
 
-//            int retryCount = 0;
-//            while (sendResult.indexOf("Welcome To Zscaler Directory Authentication Sign In") != -1 && retryCount < 50) {
-//                sendResult = new ProxyHttpRequest().sendGet(url, param);
-//                retryCount++;
-//            }
-            JSONObject pageHelp = new JSONObject();
-            try {
-                pageHelp = JSONObject.parseObject(sendResult).getJSONObject("pageHelp");
-            } catch (JSONException e) {
-                logger.error("解析jsonb报错："+ pageHelp.toJSONString());
-            } catch (NullPointerException e) {
-                logger.error(e.getMessage());
-                e.printStackTrace();
-            }
-            List<StockBean> jsonArr = JSON.parseArray(pageHelp.getString("data"), StockBean.class);
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("pn", "1");
+        param.put("pz", "3000");
+        param.put("po", "1");
+        param.put("np", "1");
+        param.put("ut", "bd1d9ddb04089700cf9c27f6f7426281");
+        param.put("fltt", "2");
+        param.put("invt", "2");
+        param.put("fid", "f3");
+        param.put("fs", "m:1+t:2,m:1+t:23");
+        param.put("fields", "f1,f2,f3,f4,f5,f6,f7,f8,f9,f10,f12,f13,f14,f15,f16,f17,f18,f20,f21,f23,f24,f25,f26,f38,f39,f22,f11,f62,f128,f136,f115,f152,f297");
+        param.put("invt", "2");
+        param.put("invt", "2");
+        param.put("invt", "2");
+        String sendResult = HttpsUtils.doGetString(url, param);
 
-            if (jsonArr.size() == 0) {
-                break;
-            }
-
-
-            for (int  j = 0; j < jsonArr.size(); j++) {
-                StockBean stockStr = jsonArr.get(j);
-                stockStr.setStockNum(stockStr.getCOMPANY_CODE());
-                stockStr.setStockName(stockStr.getCOMPANY_ABBR());
-
-
-                stockBeanList.add(stockStr);
-            }
-            Random rd=new Random();
-            try {
-                Thread.sleep(rd.nextInt(1000));
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        JSONObject data = new JSONObject();
+        try {
+            data = JSONObject.parseObject(sendResult).getJSONObject("data");
+        } catch (JSONException e) {
+            logger.error("解析jsonb报错：" + data.toJSONString());
+        } catch (NullPointerException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
         }
 
+        JSONArray diff = data.getJSONArray("diff");
+        for (Object o : diff) {
+            Map<String, Object> map = (Map) o;
+            StockBean stockBean = new StockBean();
+            stockBean.setStockNum((String) map.get("f12"));
+            stockBean.setStockName((String) map.get("f14"));
+            stockBean.setTotalFlowShares(objectToBigDecimal(map.get("f39")));
+            stockBean.setTotalShares(objectToBigDecimal(map.get("f38")));
+            stockBean.setUpDownRange(objectToBigDecimal(map.get("f3")));
+            stockBean.setTurnOverrate(objectToBigDecimal(map.get("f8")));
+            stockBean.setUpDownPrices(objectToBigDecimal(map.get("f4")));
+            stockBean.setOpen(objectToBigDecimal(map.get("f17")));
+            stockBean.setClose(objectToBigDecimal(map.get("f2")));
+            stockBean.setHigh(objectToBigDecimal(map.get("f15")));
+            stockBean.setLow(objectToBigDecimal(map.get("f16")));
+            stockBean.setPreClose(objectToBigDecimal(map.get("f18")));
+            stockBean.setVolume(objectToBigDecimal(map.get("f5")));
+            stockBean.setAmount(objectToBigDecimal(map.get("f6")));
+            stockBean.setAmplitude(objectToBigDecimal(map.get("f7")));
+            stockBean.setTotalMarketValue(objectToBigDecimal( map.get("f20")));
+            stockBean.setFlowMarketValue(objectToBigDecimal(map.get("f21")));
+            stockBean.setListingDate(String.valueOf(map.get("f26")));
 
+            stockBeanList.add(stockBean);
+        }
 
         return stockBeanList;
     }
+
+    public Double objectToBigDecimal(Object o) {
+        try {
+            return Double.valueOf(String.valueOf(o));
+        } catch (NumberFormatException e) {
+            return Double.valueOf(0);
+        }
+
+
+    }
+
 
     @Override
     public void updateStock(StockBean stockBean) {
@@ -221,8 +187,14 @@ public class StockDIService extends ServiceImpl<StockMapper, StockBean> implemen
         int stockdayinfoListSize = stockdayinfoList.size();
         StockDayInfo currentStockdayinfo = stockdayinfoList.get(stockdayinfoListSize - 1);
         StockDayInfo preStockdayinfo = stockdayinfoList.get(stockdayinfoListSize - 1 - 1);
-        StockDayInfo pre3Stockdayinfo = stockdayinfoList.get(stockdayinfoListSize - 1 - 3);
-        StockDayInfo pre5Stockdayinfo = stockdayinfoList.get(stockdayinfoListSize - 1 - 5);
+        StockDayInfo pre3Stockdayinfo = new StockDayInfo();
+        StockDayInfo pre5Stockdayinfo = new StockDayInfo();
+        if (stockdayinfoListSize >= 4) {
+            pre3Stockdayinfo = stockdayinfoList.get(stockdayinfoListSize - 1 - 3);
+        }
+        if (stockdayinfoListSize >= 6) {
+            pre5Stockdayinfo = stockdayinfoList.get(stockdayinfoListSize - 1 - 5);
+        }
 
         double currentClosePrise = currentStockdayinfo.getClose();
         double currentVolume = currentStockdayinfo.getVolume();
@@ -243,7 +215,7 @@ public class StockDIService extends ServiceImpl<StockMapper, StockBean> implemen
         }
 
         double upDownPrices = currentClosePrise - preClosePrise;
-        Date newDate = currentStockdayinfo.getDate();
+        String newDate = currentStockdayinfo.getDate();
 
         double amplitude = 0;
         if (currentClosePrise - preClosePrise != 0) {

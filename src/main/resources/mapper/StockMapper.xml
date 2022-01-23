@@ -8,7 +8,7 @@
     <insert id="insertStockDayInfo" parameterType="java.util.Map">
         INSERT ignore ${stockDayInfoTable} (date, open, high, low, close, volume, amount,
         ma5, ma10, ma20, ma30, ma60, ma120, ma200, ma250, volume120, k, d, j, dif, dea, macd, wr6, wr10
-        ,rsi6, rsi12, rsi24)
+        ,rsi6, rsi12, rsi24, preClose)
         VALUES
         <foreach collection="stockdayinfo" item="stockDayInfo" index="index" separator=",">
             (#{stockDayInfo.date}, #{stockDayInfo.open}, #{stockDayInfo.high},
@@ -18,7 +18,7 @@
             , #{stockDayInfo.ma200}, #{stockDayInfo.ma250}, #{stockDayInfo.volume120}, #{stockDayInfo.k},
             #{stockDayInfo.d}, #{stockDayInfo.j}
             , #{stockDayInfo.dif}, #{stockDayInfo.dea}, #{stockDayInfo.macd}, #{stockDayInfo.wr6}, #{stockDayInfo.wr10}
-            , #{stockDayInfo.rsi6}, #{stockDayInfo.rsi12}, #{stockDayInfo.rsi24})
+            , #{stockDayInfo.rsi6}, #{stockDayInfo.rsi12}, #{stockDayInfo.rsi24}, #{stockDayInfo.preClose})
         </foreach>
     </insert>
 
@@ -70,16 +70,19 @@
     </insert>
 
     <insert id="insertStockList" parameterType="java.util.List">
-        INSERT INTO stock(stockNum, stockName, LISTING_DATE, totalFlowShares, totalShares
+        INSERT INTO stock(stockNum, stockName, totalFlowShares, totalShares
         , upDownRange, upDownRange3, upDownRange5, turnOverrate, upDownPrices, open, close
-        , high, low, preClose)
+        , high, low, preClose, amount, volume, totalMarketValue, flowMarketValue, amplitude
+        , listingDate, updateDate)
         VALUES
         <foreach collection="list" item="stockBean" index="index" separator=",">
-            (#{stockBean.stockNum}, #{stockBean.stockName}, #{stockBean.LISTING_DATE}
+            (#{stockBean.stockNum}, #{stockBean.stockName}
             , #{stockBean.totalFlowShares}, #{stockBean.totalShares}, #{stockBean.upDownRange}
             , #{stockBean.upDownRange3}, #{stockBean.upDownRange5}, #{stockBean.turnOverrate}
             , #{stockBean.upDownPrices}, #{stockBean.open}, #{stockBean.close}, #{stockBean.high}
-            , #{stockBean.low}, #{stockBean.preClose})
+            , #{stockBean.low}, #{stockBean.preClose}, #{stockBean.amount}, #{stockBean.volume}
+            , #{stockBean.totalMarketValue}, #{stockBean.flowMarketValue}, #{stockBean.amplitude}
+            , #{stockBean.listingDate}, #{stockBean.updateDate})
         </foreach>
     </insert>
 
@@ -93,6 +96,7 @@
         `high` double(10,3) DEFAULT NULL,
         `low` double(10,3) DEFAULT NULL,
         `close` double(10,3) DEFAULT NULL,
+        `preClose` double(10,3) DEFAULT NULL,
         `volume` double(15,0) DEFAULT NULL,
         `amount` double(15,0) DEFAULT NULL,
         `ma5` double(15,5) DEFAULT NULL,

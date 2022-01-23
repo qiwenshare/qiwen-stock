@@ -24,45 +24,45 @@ public class StockBidBean {
     @Column
     private String time;
     @Column
-    private double sellPrice5;
+    private Double sellPrice5;
     @Column
-    private double sellPrice4;
+    private Double sellPrice4;
     @Column
-    private double sellPrice3;
+    private Double sellPrice3;
     @Column
-    private double sellPrice2;
+    private Double sellPrice2;
     @Column
-    private double sellPrice1;
+    private Double sellPrice1;
     @Column
-    private double boughtPrice1;
+    private Double boughtPrice1;
     @Column
-    private double boughtPrice2;
+    private Double boughtPrice2;
     @Column
-    private double boughtPrice3;
+    private Double boughtPrice3;
     @Column
-    private double boughtPrice4;
+    private Double boughtPrice4;
     @Column
-    private double boughtPrice5;
+    private Double boughtPrice5;
     @Column
-    private int sellCount5;
+    private Integer sellCount5;
     @Column
-    private int sellCount4;
+    private Integer sellCount4;
     @Column
-    private int sellCount3;
+    private Integer sellCount3;
     @Column
-    private int sellCount2;
+    private Integer sellCount2;
     @Column
-    private int sellCount1;
+    private Integer sellCount1;
     @Column
-    private int boughtCount1;
+    private Integer boughtCount1;
     @Column
-    private int boughtCount2;
+    private Integer boughtCount2;
     @Column
-    private int boughtCount3;
+    private Integer boughtCount3;
     @Column
-    private int boughtCount4;
+    private Integer boughtCount4;
     @Column
-    private int boughtCount5;
+    private Integer boughtCount5;
 
     public StockBidBean() {
     }

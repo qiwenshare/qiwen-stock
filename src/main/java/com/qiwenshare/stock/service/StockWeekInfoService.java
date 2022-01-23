@@ -1,5 +1,6 @@
 package com.qiwenshare.stock.service;
 
+import com.qiwenshare.common.util.DateUtil;
 import com.qiwenshare.stock.api.IStockWeekInfoService;
 import com.qiwenshare.stock.domain.StockBean;
 import com.qiwenshare.stock.domain.StockDayInfo;
@@ -9,6 +10,7 @@ import com.qiwenshare.stock.mapper.StockMapper;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.ParseException;
 import java.util.*;
 
 @Service
@@ -90,11 +92,11 @@ public class StockWeekInfoService implements IStockWeekInfoService {
         double weekVolume = 0;
         double weekAmount = 0;
         double weekPreClose = 0;
-        Date weekDate = new Date();
+        String weekDate = new String();
         int preDayOfWeek = 0;
         List<StockWeekInfo> stockWeekInfoList = new ArrayList<>();
         for (int i = 0; i < stockDayInfoList.size(); i++) {
-            Date stringDate = stockDayInfoList.get(i).getDate();
+            String stringDate = stockDayInfoList.get(i).getDate();
             double open = stockDayInfoList.get(i).getOpen();
             double close = stockDayInfoList.get(i).getClose();
             double high = stockDayInfoList.get(i).getHigh();
@@ -102,10 +104,14 @@ public class StockWeekInfoService implements IStockWeekInfoService {
             double volume = stockDayInfoList.get(i).getVolume();
             double amount = stockDayInfoList.get(i).getAmount();
             double preClose = stockDayInfoList.get(i).getPreClose();
-            Date date = stockDayInfoList.get(i).getDate();
+            String date = stockDayInfoList.get(i).getDate();
 
             Calendar cal = Calendar.getInstance();
-            cal.setTime(stringDate);
+            try {
+                cal.setTime(DateUtil.getDateByFormatString(stringDate, "yyyy-MM-dd"));
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
             int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
             if (dayOfWeek == 1) {
                 dayOfWeek = 7;
@@ -123,7 +129,7 @@ public class StockWeekInfoService implements IStockWeekInfoService {
                     stockWeekInfo.setAmount(weekAmount);
                     stockWeekInfo.setVolume(weekVolume);
                     stockWeekInfo.setPreClose(weekPreClose);
-                    stockWeekInfo.setDate(new java.sql.Date(weekDate.getTime()));
+                    stockWeekInfo.setDate(weekDate);
                     stockWeekInfoList.add(stockWeekInfo);
                     weekOpen = 0;
                     weekClose = 0;
@@ -165,23 +171,22 @@ public class StockWeekInfoService implements IStockWeekInfoService {
         stockWeekInfo.setAmount(weekAmount);
         stockWeekInfo.setVolume(weekVolume);
         stockWeekInfo.setPreClose(weekPreClose);
-        stockWeekInfo.setDate(new java.sql.Date(weekDate.getTime()));
+        stockWeekInfo.setDate(weekDate);
         stockWeekInfoList.add(stockWeekInfo);
         stockWeekInfoList = new IndicatorProxy().getWeekIndicatorList(stockWeekInfoList);
         return stockWeekInfoList;
     }
 
     @Override
-    public void insertStockWeekInfo(String stockWeekInfoTable, List<StockWeekInfo> stockweekinfo) {
+    public void insertStockWeekInfo(String stockNum, List<StockWeekInfo> stockweekinfo) {
         Map<String, Object> stockWeekInfoMap = new HashMap<String, Object>();
-        stockWeekInfoMap.put("stockWeekInfoTable", stockWeekInfoTable);
+        stockWeekInfoMap.put("stockWeekInfoTable", "stockweekinfo_" + stockNum);
 
         List<StockWeekInfo> tempStockWeekInfoList = stockweekinfo;
         while (tempStockWeekInfoList.size() > 300) {
             List<StockWeekInfo> insertStockWeekInfoList = tempStockWeekInfoList.subList(0, 300);
             stockWeekInfoMap.put("stockweekinfo", insertStockWeekInfoList);
             stockMapper.insertStockWeekInfo(stockWeekInfoMap);
-            //int stockDayInfoSize = stockdayinfo.size();
             tempStockWeekInfoList = tempStockWeekInfoList.subList(300, tempStockWeekInfoList.size());
         }
         stockWeekInfoMap.put("stockweekinfo", tempStockWeekInfoList);//.subList(stockDayInfoSize - 5, stockDayInfoSize));
