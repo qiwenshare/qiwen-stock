@@ -137,7 +137,7 @@ public class UserService extends ServiceImpl<UserMapper, UserBean> implements IU
         userBean.setPassword(newPassword);
         userBean.setRegisterTime(DateUtil.getCurrentTime());
         int result = userMapper.insertUser(userBean);
-        userMapper.insertUserRole(userBean.getUserId(), 2);
+//        userMapper.insertUserRole(userBean.getUserId(), 2);
         if (result == 1) {
             return RestResult.success();
         } else {
