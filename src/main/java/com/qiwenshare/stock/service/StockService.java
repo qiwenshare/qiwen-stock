@@ -111,7 +111,7 @@ public class StockService extends ServiceImpl<StockMapper, StockBean> implements
 
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("pn", "1");
-        param.put("pz", "20");
+        param.put("pz", "3000");
         param.put("po", "1");
         param.put("np", "1");
         param.put("ut", "bd1d9ddb04089700cf9c27f6f7426281");
