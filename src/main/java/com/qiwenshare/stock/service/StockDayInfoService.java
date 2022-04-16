@@ -59,7 +59,7 @@ public class StockDayInfoService implements IStockDayInfoService {
 
             int differentDay = 0;
             try {
-                differentDay = DateUtil.getDifferentDays(DateUtil.getDateByFormatString(updateDate, "yyyyMMdd"), DateUtil.getDateByFormatString(currentDate, "yyyyMMdd"));
+                differentDay = DateUtil.getDifferentDays(DateUtil.getDateByFormatString(updateDate, "yyyy-MM-dd"), DateUtil.getDateByFormatString(currentDate, "yyyy-MM-dd"));
             } catch (ParseException e) {
                 e.printStackTrace();
             }
@@ -69,7 +69,7 @@ public class StockDayInfoService implements IStockDayInfoService {
             } else {
                 notSaveStockDayInfo = stockdayinfo;
             }
-            stockDayInfoMap.put("stockdayinfo", notSaveStockDayInfo);//.subList(stockDayInfoSize - 5, stockDayInfoSize));
+            stockDayInfoMap.put("stockdayinfo", notSaveStockDayInfo);
             stockMapper.insertStockDayInfo(stockDayInfoMap);
             return;
         }
@@ -81,7 +81,7 @@ public class StockDayInfoService implements IStockDayInfoService {
             stockMapper.insertStockDayInfo(stockDayInfoMap);
             notSaveStockDayInfo = notSaveStockDayInfo.subList(200, notSaveStockDayInfo.size());
         }
-        stockDayInfoMap.put("stockdayinfo", notSaveStockDayInfo);//.subList(stockDayInfoSize - 5, stockDayInfoSize));
+        stockDayInfoMap.put("stockdayinfo", notSaveStockDayInfo);
         stockMapper.insertStockDayInfo(stockDayInfoMap);
 
     }
