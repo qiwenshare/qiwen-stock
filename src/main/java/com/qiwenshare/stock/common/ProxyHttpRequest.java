@@ -1,8 +1,8 @@
 package com.qiwenshare.stock.common;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
+
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import com.qiwenshare.stock.constant.ProxyConstant;
 import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
@@ -24,7 +24,7 @@ public class ProxyHttpRequest {
         String proxyRequest = getProxyRequestResult(ProxyConstant.SERVER_PROXY_COUNT);
         JSONObject resultObj = JSONObject.parseObject(proxyRequest);
         String requestJson = JSON.toJSONString(resultObj.getObject("data", List.class));
-        proxyBeans = JSONArray.parseArray(requestJson, ProxyBean.class);
+        proxyBeans = JSON.parseArray(requestJson, ProxyBean.class);
     }
 
     /**
@@ -104,7 +104,7 @@ public class ProxyHttpRequest {
             String proxyRequest = getProxyRequestResult(ProxyConstant.SERVER_PROXY_COUNT);
             JSONObject resultObj = JSONObject.parseObject(proxyRequest);
             String requestJson = JSON.toJSONString(resultObj.getObject("data", List.class));
-            proxyBeans = JSONArray.parseArray(requestJson, ProxyBean.class);
+            proxyBeans = JSON.parseArray(requestJson, ProxyBean.class);
             if (proxyBeans.size() <= 1) {
                 return "没有可用的代理";
             }

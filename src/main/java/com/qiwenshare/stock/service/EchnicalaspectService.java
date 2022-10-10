@@ -52,7 +52,6 @@ public class EchnicalaspectService implements IEchnicalaspectService {
         MACD macd = new MACD();
         RSI rsi = new RSI();
         TacticsAnalysis tacticsAnalysis = new CattleCatchingAnalysis();
-        //8888888888888888888888888888888java.lang.ArrayIndexOutOfBoundsException: -1
         StockDayInfo preStockDayInfo = stockDayInfoList.get(stockDayInfoList.size() - 2);
         StockDayInfo stockDayInfo = stockDayInfoList.get(stockDayInfoList.size() - 1);
         StockBean stockBean = new StockBean();

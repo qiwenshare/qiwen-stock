@@ -2,13 +2,16 @@ package com.qiwenshare.stock.api;
 
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.qiwenshare.common.result.RestResult;
-import com.qiwenshare.stock.domain.UserBean;
+import com.qiwenshare.stock.domain.user.Role;
+import com.qiwenshare.stock.domain.user.UserBean;
+
+import java.util.List;
 
 public interface IUserService extends IService<UserBean> {
 
-    UserBean getUserBeanByToken(String token);
 
-    UserBean selectUserByopenid(String openid);
+    Long getUserIdByToken(String token);
+
 
     /**
      * 用户注册
@@ -21,6 +24,10 @@ public interface IUserService extends IService<UserBean> {
 
 
     UserBean findUserInfoByTelephone(String telephone);
+    List<Role> selectRoleListByUserId(long userId);
+    String getSaltByTelephone(String telephone);
+    UserBean selectUserByTelephoneAndPassword(String username, String password);
+
 
 
 

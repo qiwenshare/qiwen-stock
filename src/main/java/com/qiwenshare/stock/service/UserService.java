@@ -1,48 +1,56 @@
 package com.qiwenshare.stock.service;
 
-import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.qiwenshare.common.result.RestResult;
 import com.qiwenshare.common.util.DateUtil;
-import com.qiwenshare.common.util.JjwtUtil;
 import com.qiwenshare.common.util.PasswordUtil;
+import com.qiwenshare.common.util.security.JwtUser;
 import com.qiwenshare.stock.api.IUserService;
+import com.qiwenshare.stock.component.JwtComp;
 import com.qiwenshare.stock.component.UserDealComp;
 import com.qiwenshare.stock.controller.UserController;
-import com.qiwenshare.stock.domain.UserBean;
+import com.qiwenshare.stock.domain.user.Role;
+import com.qiwenshare.stock.domain.user.UserBean;
 import com.qiwenshare.stock.mapper.UserMapper;
 import io.jsonwebtoken.Claims;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.crypto.hash.SimpleHash;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Service
 @Transactional(rollbackFor=Exception.class)
-public class UserService extends ServiceImpl<UserMapper, UserBean> implements IUserService {
+public class UserService extends ServiceImpl<UserMapper, UserBean> implements IUserService, UserDetailsService {
 
     @Resource
     UserMapper userMapper;
     @Resource
     UserDealComp userDealComp;
+    @Resource
+    JwtComp jwtComp;
 
     @Override
-    public UserBean getUserBeanByToken(String token){
+    public Long getUserIdByToken(String token) {
         Claims c = null;
         if (StringUtils.isEmpty(token)) {
             return null;
         }
-//        if (!token.startsWith("Bearer ")) {
-//            throw new NotLoginException("token格式错误");
-//        }
         token = token.replace("Bearer ", "");
+        token = token.replace("Bearer%20", "");
         try {
-            c = JjwtUtil.parseJWT(token);
+            c = jwtComp.parseJWT(token);
         } catch (Exception e) {
             log.error("解码异常:" + e);
             return null;
@@ -54,70 +62,23 @@ public class UserService extends ServiceImpl<UserMapper, UserBean> implements IU
         String subject = c.getSubject();
         log.debug("解析结果：" + subject);
         UserBean tokenUserBean = JSON.parseObject(subject, UserBean.class);
+        UserBean user = userMapper.selectById(tokenUserBean.getUserId());
+        if (user != null) {
+            return user.getUserId();
+        }
 
-        UserBean saveUserBean = new UserBean();
-        String tokenPassword = "";
-        String savePassword = "";
-        if (StringUtils.isNotEmpty(tokenUserBean.getPassword())) {
-            saveUserBean = findUserInfoByTelephone(tokenUserBean.getTelephone());
-            if (saveUserBean == null) {
-                return null;
-            }
-            tokenPassword = tokenUserBean.getPassword();
-            savePassword = saveUserBean.getPassword();
-        } else if (StringUtils.isNotEmpty(tokenUserBean.getQqPassword())) {
-            saveUserBean = selectUserByopenid(tokenUserBean.getOpenId());
-            if (saveUserBean == null) {
-                return null;
-            }
-            tokenPassword = tokenUserBean.getQqPassword();
-            savePassword = saveUserBean.getQqPassword();
-        }
-        if (StringUtils.isEmpty(tokenPassword) || StringUtils.isEmpty(savePassword)) {
-            return null;
-        }
-        if (tokenPassword.equals(savePassword)) {
-
-            return saveUserBean;
-        } else {
-            return null;
-        }
+        return null;
     }
 
 
-    @Override
-    public UserBean selectUserByopenid(String openid) {
-        LambdaQueryWrapper<UserBean> lambdaQueryWrapper = new LambdaQueryWrapper<>();
-        lambdaQueryWrapper.eq(UserBean::getOpenId, openid);
-        return userMapper.selectOne(lambdaQueryWrapper);
-
-    }
-    /**
-     * 用户注册
-     */
     @Override
     public RestResult<String> registerUser(UserBean userBean) {
-        //RestResult<String> restResult = new RestResult<String>();
+
         //判断验证码
         String telephone = userBean.getTelephone();
-//        String saveVerificationCode = UserController.verificationCodeMap.get(telephone);
-//        if (!saveVerificationCode.equals(userBean.getVerificationcode())){
-//            restResult.setSuccess(false);
-//            restResult.setErrorMessage("验证码错误！");
-//            return restResult;
-//        }
+
         UserController.verificationCodeMap.remove(telephone);
-        if (userBean.getTelephone() == null || "".equals(userBean.getTelephone())){
-            return RestResult.fail().message("用户名不能为空！");
-        }
-        if (userBean.getPassword() == null || "".equals(userBean.getPassword())){
-            return RestResult.fail().message("密码不能为空！");
 
-        }
-
-        if (userBean.getUsername() == null || "".equals(userBean.getUsername())){
-            return RestResult.fail().message("用户名不能为空！");
-        }
         if (userDealComp.isUserNameExit(userBean)) {
             return RestResult.fail().message("用户名已存在！");
         }
@@ -137,7 +98,7 @@ public class UserService extends ServiceImpl<UserMapper, UserBean> implements IU
         userBean.setPassword(newPassword);
         userBean.setRegisterTime(DateUtil.getCurrentTime());
         int result = userMapper.insertUser(userBean);
-//        userMapper.insertUserRole(userBean.getUserId(), 2);
+        userMapper.insertUserRole(userBean.getUserId(), 2);
         if (result == 1) {
             return RestResult.success();
         } else {
@@ -145,16 +106,6 @@ public class UserService extends ServiceImpl<UserMapper, UserBean> implements IU
         }
     }
 
-
-
-
-
-    /**
-     * 通过手机号获取用户信息
-     *
-     * @param telephone
-     * @return
-     */
     public UserBean findUserInfoByTelephone(String telephone) {
         LambdaQueryWrapper<UserBean> lambdaQueryWrapper = new LambdaQueryWrapper<>();
         lambdaQueryWrapper.eq(UserBean::getTelephone, telephone);
@@ -162,6 +113,42 @@ public class UserService extends ServiceImpl<UserMapper, UserBean> implements IU
 
     }
 
+    @Override
+    public UserDetails loadUserByUsername(String s) throws UsernameNotFoundException {
+        UserBean user = userMapper.selectById(Long.valueOf(s));
+        if (user == null) {
+            throw new UsernameNotFoundException(String.format("用户不存在"));
+        }
 
+        List<Role> roleList = new ArrayList<>(); //selectRoleListByUserId(user.getUserId());
+        Role tempRole = new Role();
+        tempRole.setRoleId(2L);;
+        tempRole.setAvailable(1);
+        roleList.add(tempRole);
+        List<SimpleGrantedAuthority> authorities = new ArrayList<>();
+        for (Role role : roleList) {
+            SimpleGrantedAuthority simpleGrantedAuthority = new SimpleGrantedAuthority("ROLE_" + role.getRoleName());
+            authorities.add(simpleGrantedAuthority);
+        }
+
+        JwtUser jwtUser = new JwtUser(user.getUserId(), user.getUsername(), user.getPassword(),
+                user.getAvailable(), authorities);
+        return jwtUser;
+    }
+
+    @Override
+    public List<Role> selectRoleListByUserId(long userId) {
+        return userMapper.selectRoleListByUserId(userId);
+    }
+
+    @Override
+    public String getSaltByTelephone(String telephone) {
+
+        return userMapper.selectSaltByTelephone(telephone);
+    }
+    @Override
+    public UserBean selectUserByTelephoneAndPassword(String username, String password) {
+        return userMapper.selectUserByTelephoneAndPassword(username, password);
+    }
 
 }
