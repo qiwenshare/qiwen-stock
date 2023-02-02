@@ -18,7 +18,7 @@ SERVER_NAME=`cat $CONF_DIR/config/application.properties | grep -w "spring.appli
 SERVER_PORT=`cat $CONF_DIR/config/application.properties | grep -w "server.port" | grep -v "#" | awk -F=  'NR==1{print $2}'`
 
 
-LOG_PATH=$DEPLOY_DIR/log/qiwen-file
+LOG_PATH=$DEPLOY_DIR/log/qiwen-stock
 
 if [ "${LOG_PATH}" == "" ] ; then
 	LOG_PATH=$PARENT_DIR/logs/${SERVER_NAME}
@@ -84,7 +84,7 @@ echo "Using CONF_DIR: $CONF_DIR"
 
 CLASSPATH=".:$CONF_DIR:$LIB_JARS"
 
-EXEC_CMDLINE="${JAVA_HOME}/bin/java -classpath ${CLASSPATH} ${USER_VMARGS} ${GC_OPTS} ${JAVA_JMX_OPTS} ${JAVA_DEBUG} ${JAVA_OPTS} com.qiwenshare.file.FileApplication"
+EXEC_CMDLINE="${JAVA_HOME}/bin/java -classpath ${CLASSPATH} ${USER_VMARGS} ${GC_OPTS} ${JAVA_JMX_OPTS} ${JAVA_DEBUG} ${JAVA_OPTS} com.qiwenshare.stock.StockApplication"
 
 echo "Start app command line: ${EXEC_CMDLINE}" >> $STDOUT_FILE
 echo "Starting $SERVER_NAME ..."

@@ -218,10 +218,6 @@
         <id property="stockId" column="stockId"></id>
         <result property="stockNum" column="stockNum"></result>
         <result property="stockName" column="stockName"></result>
-        <result property="COMPANY_ABBR" column="COMPANY_ABBR"></result>
-        <result property="COMPANY_CODE" column="COMPANY_CODE"></result>
-        <result property="NUM" column="NUM"></result>
-        <result property="LISTING_DATE" column="LISTING_DATE"></result>
         <result property="totalFlowShares" column="totalFlowShares"></result>
         <result property="totalShares" column="totalShares"></result>
         <result property="upDownRange" column="upDownRange"></result>

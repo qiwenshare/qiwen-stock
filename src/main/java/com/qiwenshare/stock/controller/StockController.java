@@ -1,7 +1,6 @@
 package com.qiwenshare.stock.controller;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.alibaba.fastjson2.JSON;
 import com.qiwenshare.common.result.RestResult;
 import com.qiwenshare.stock.analysis.ReplayOperation;
 import com.qiwenshare.stock.api.*;
@@ -66,95 +65,62 @@ public class StockController {
     IEchnicalaspectService echnicalaspectService;
     @Resource
     IAbnormalaActionService abnormalaActionService;
-    /**
-     * 日线
-     *
-     * @return
-     */
+
     @Operation(summary = "日线")
     @RequestMapping("/getstockdaybar")
     @ResponseBody
-    public String getStockdaybar(String stockNum) {
+    public List<StockDayInfo> getStockdaybar(String stockNum) {
         List<StockDayInfo> stockdayList = stockDayInfoService.getStockdaybar(stockNum);
         Collections.reverse(stockdayList);
-        return JSON.toJSONString(stockdayList);
+        return stockdayList;
     }
 
-    /**
-     * 得到交易信息
-     *
-     * @return
-     */
     @Operation(summary = "得到交易信息")
     @RequestMapping("/getstockbid")
     @ResponseBody
-    public String getStockBid(String stockNum) {
+    public StockBidBean getStockBid(String stockNum) {
         StockBidBean stockBidBean = stockBidService.getStockBidBean(stockNum);
-        return JSON.toJSONString(stockBidBean);
+        return stockBidBean;
     }
 
-    /**
-     * 分时线
-     *
-     * @return
-     */
     @Operation(summary = "分时线")
     @RequestMapping("/getstocktimebar")
     @ResponseBody
-    public String getStocktimebar(String stockNum) {
+    public List<StockTimeInfo> getStocktimebar(String stockNum) {
         List<StockTimeInfo> stocktimeList = stockTimeInfoService.getStocktimebar(stockNum);
         Collections.reverse(stocktimeList);
-        return JSON.toJSONString(stocktimeList);
+        return stocktimeList;
     }
 
-    /**
-     * 周线
-     *
-     * @return
-     */
     @Operation(summary = "周线")
     @RequestMapping("/getstockweekbar")
     @ResponseBody
-    public String getStockweekbar(String stockNum) {
+    public List<StockWeekInfo> getStockweekbar(String stockNum) {
         List<StockWeekInfo> stockweekList = stockWeekInfoService.getStockweekbar(stockNum);
         Collections.reverse(stockweekList);
-        return JSON.toJSONString(stockweekList);
+        return stockweekList;
     }
 
-    /**
-     * 月线
-     *
-     * @return
-     */
     @Operation(summary = "月线")
     @RequestMapping("/getstockmonthbar")
     @ResponseBody
-    public String getStockmonthbar(String stockNum) {
+    public List<StockMonthInfo> getStockmonthbar(String stockNum) {
         List<StockMonthInfo> stockmonthList = stockMonthInfoService.getStockmonthbar(stockNum);
         Collections.reverse(stockmonthList);
-        return JSON.toJSONString(stockmonthList);
+        return stockmonthList;
     }
 
-    /**
-     * 添加自选
-     *
-     * @return
-     */
+    @Operation(summary = "添加自选")
     @RequestMapping("/addStockOptional")
     @ResponseBody
-    public String addStockOptional(StockOptionalBean stockOptionalBean) {
+    public RestResult<String> addStockOptional(StockOptionalBean stockOptionalBean) {
         RestResult<String> restResult = new RestResult<String>();
         stockOptionalService.insertStockOptional(stockOptionalBean);
 
         restResult.setSuccess(true);
-        return JSON.toJSONString(restResult);
+        return restResult;
     }
 
-    /**
-     * 查询回测数据
-     *
-     * @return
-     */
     @Operation(summary = "查询回测数据")
     @RequestMapping("/selectreplaylist")
     @ResponseBody
@@ -169,15 +135,10 @@ public class StockController {
         return JSON.toJSONString(miniuiTableData);
     }
 
-    /**
-     * 查询所有回测数据
-     *
-     * @return
-     */
     @Operation(summary = "查询所有回测数据")
     @RequestMapping("/selectallreplaylist")
     @ResponseBody
-    public String selectAllReplayList(@RequestBody TableQueryBean tableQueryBean) {
+    public TableData<List<ReplayBean>> selectAllReplayList(@RequestBody TableQueryBean tableQueryBean) {
         TableData<List<ReplayBean>> miniuiTableData = new TableData<List<ReplayBean>>();
         List<ReplayBean> replayBeanList = replayService.selectAllReplayList(tableQueryBean.getBeginCount(), tableQueryBean.getLimit());
 
@@ -185,18 +146,13 @@ public class StockController {
         miniuiTableData.setSuccess(true);
         miniuiTableData.setCount(replayBeanList.size());
 
-        return JSON.toJSONString(miniuiTableData, SerializerFeature.DisableCircularReferenceDetect);
+        return miniuiTableData;
     }
 
-    /**
-     * 数据回测
-     *
-     * @return
-     */
     @Operation(summary = "数据回测")
     @RequestMapping("/backtest")
     @ResponseBody
-    public String backTest(@RequestBody StockBean stockBean) {
+    public RestResult<String> backTest(@RequestBody StockBean stockBean) {
         RestResult<String> restResult = new RestResult<String>();
         List<StockDayInfo> stockDayInfoList = stockDayInfoService.getStockdaybar(stockBean.getStockNum());
         Collections.reverse(stockDayInfoList);
@@ -204,18 +160,13 @@ public class StockController {
         List<ReplayBean> replayList = new ReplayOperation().getReplayInfo(stockDayInfoList, stockBean);
         replayService.insertReplay(replayList);
         restResult.setSuccess(true);
-        return JSON.toJSONString(restResult);
+        return restResult;
     }
 
-    /**
-     * 数据回测
-     *
-     * @return
-     */
     @Operation(summary = "所有股票数据回测")
     @RequestMapping("/totalstockbacktest")
     @ResponseBody
-    public String totalStockBackTest() {
+    public RestResult<String> totalStockBackTest() {
         RestResult<String> restResult = new RestResult<String>();
         //1、获取所有股票列表
         List<StockBean> stocklist = stockDIService.selectTotalStockList();
@@ -227,20 +178,15 @@ public class StockController {
         }
 
         restResult.setSuccess(true);
-        return JSON.toJSONString(restResult);
+        return restResult;
 
 
     }
 
-    /**
-     * 检测上证股票数据是否有需要更新
-     *
-     * @return
-     */
     @Operation(summary = "检测上证股票数据是否有需要更新")
     @RequestMapping("/checkstockisupdate")
     @ResponseBody
-    public String checkStockIsUpdate() {
+    public RestResult<String> checkStockIsUpdate() {
         RestResult<String> restResult = new RestResult<String>();
         List<StockBean> stockList = stockDIService.selectTotalStockList();
         List<StockBean> jsonArr = stockDIService.getStockListByScript();
@@ -263,25 +209,19 @@ public class StockController {
             restResult.setData(JSON.toJSONString(stockBeanList1));
 
             restResult.setSuccess(true);
-            return JSON.toJSONString(restResult);
+            return restResult;
         }
         restResult.setData("暂无新增股票信息");
 
         restResult.setSuccess(false);
-        return JSON.toJSONString(restResult);
+        return restResult;
 
     }
 
-    /**
-     * 更新股票列表
-     *
-     * @param request
-     * @return
-     */
     @Operation(summary = "更新股票列表")
     @RequestMapping("/updatestocklist")
     @ResponseBody
-    public String updateStockList(HttpServletRequest request) {
+    public RestResult<String> updateStockList(HttpServletRequest request) {
 
         RestResult<String> restResult = new RestResult<String>();
         List<StockBean> stockBeanList = stockDIService.getStockListByScript();
@@ -328,15 +268,10 @@ public class StockController {
 
         restResult.setSuccess(true);
 
-        return JSON.toJSONString(restResult);
+        return restResult;
     }
 
-    /**
-     * 获取股票列表
-     *
-     * @return
-     */
-    @Operation(summary = "获取股票列表")
+    @Operation(summary = "查询股票列表信息")
     @RequestMapping("/getstocklist")
     @ResponseBody
     public RestResult getStockList(@Parameter(description = "当前页", required = false) long currentPage,
@@ -362,74 +297,48 @@ public class StockController {
         return RestResult.success().data(map);
     }
 
-    /**
-     * 获取技术面结果
-     *
-     * @return
-     */
     @Operation(summary = "获取技术面结果")
     @RequestMapping("/getechnicalaspect")
     @ResponseBody
-    public String getEchnicalaspect(String stockNum) {
+    public EchnicalaspectBean getEchnicalaspect(String stockNum) {
         EchnicalaspectBean echnicalaspectBean = echnicalaspectService.getEchnicalaspectBean(stockNum);
 
-        return JSON.toJSONString(echnicalaspectBean);
+        return echnicalaspectBean;
     }
 
-    /**
-     * 获取异动
-     *
-     * @return
-     */
     @Operation(summary = "获取异动")
     @RequestMapping("/getabnormalaction")
     @ResponseBody
-    public String getAbnormalaction(String stockNum) {
+    public AbnormalactionBean getAbnormalaction(String stockNum) {
         AbnormalactionBean abnormalactionBean = abnormalaActionService.getAbnormalactionBean(stockNum);
 
-        return JSON.toJSONString(abnormalactionBean);
+        return abnormalactionBean;
     }
 
-    /**
-     * 获取股票信息通过Id
-     *
-     * @return
-     */
     @Operation(summary = "获取股票信息通过Id")
     @RequestMapping("/getstockinfobyid")
     @ResponseBody
-    public String getStockInfoById(String stockId) {
-        return JSON.toJSONString(stockDIService.getStockInfoById(stockId));
+    public StockBean getStockInfoById(String stockId) {
+        return stockDIService.getStockInfoById(stockId);
     }
 
-
-    /**
-     * 更新股票数据
-     *
-     * @return
-     */
-    @Operation(summary = "更新股票数据")
+    @Operation(summary = "更新股票详情")
     @RequestMapping("/updatestocktimeinfo")
     @ResponseBody
-    public String updateStockTimeInfo() {
+    public RestResult<String> updateStockTimeInfo() {
         RestResult<String> restResult = new RestResult<String>();
         //1、获取所有股票列表
         List<StockBean> stocklist = stockDIService.selectTotalStockList();
         stockExecutor.start(stocklist);
 
         restResult.setSuccess(true);
-        return JSON.toJSONString(restResult);
+        return restResult;
     }
 
-    /**
-     * 停止更新股票信息
-     *
-     * @return
-     */
     @Operation(summary = "停止更新股票信息")
     @RequestMapping("/stopupdatetaskbytype")
     @ResponseBody
-    public String stopUpdateTaskByType(int taskType) {
+    public RestResult<String> stopUpdateTaskByType(int taskType) {
         RestResult<String> restResult = new RestResult<String>();
 
         StockTaskTypeEnum enum1 = null;
@@ -450,18 +359,13 @@ public class StockController {
         StockWebsocket.pushTaskState("任务已经停止", false);
 
         restResult.setSuccess(true);
-        return JSON.toJSONString(restResult);
+        return restResult;
     }
 
-    /**
-     * 停止更新股票分时信息
-     *
-     * @return
-     */
     @Operation(summary = "停止更新股票分时信息")
     @RequestMapping("/stopupdatestocktimedata")
     @ResponseBody
-    public String stopUpdateStockTimeData() {
+    public RestResult<String> stopUpdateStockTimeData() {
         RestResult<String> restResult = new RestResult<String>();
 
         try {
@@ -480,14 +384,9 @@ public class StockController {
         System.out.println("停止成功！");
 
         restResult.setSuccess(true);
-        return JSON.toJSONString(restResult);
+        return restResult;
     }
 
-    /**
-     * 检测上证股票实时数据
-     *
-     * @return
-     */
     @Operation(summary = "检测上证股票实时数据")
     @RequestMapping("/getshstock")
     @ResponseBody
@@ -499,7 +398,6 @@ public class StockController {
         } catch (IOException e) {
             e.printStackTrace();
         }
-//        String result = HttpRequest.sendGet("http://yunhq.sse.com.cn:32041//v1/sh1/list/self/000001_000016_000010_000009_000300","select=code%2Cname%2Clast%2Cchg_rate%2Camount%2Copen%2Cprev_close&_=1585456053043");
         return result;
     }
 

@@ -1,7 +1,7 @@
 package com.qiwenshare.stock.component;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.qiwenshare.stock.domain.UserBean;
+import com.qiwenshare.stock.domain.user.UserBean;
 import com.qiwenshare.stock.mapper.UserMapper;
 import org.springframework.stereotype.Component;
 
